@@ -36,58 +36,69 @@ public class matrix {
 	
 	//Main function
 	public static void main(String[] args) throws InterruptedException {
-		int N = 6;
+		int N = 2000;
 		int row = 0;
 		int col = 0;
 		
-		final int NUM_THREAD = 4;
-		/*
-		switch (NUM_THREAD) {
-		case 1: row = N;
-		        col = N;
-		        break;
-		case 2: row = N/2;
-				col = N;
-				break;
-		case 4: row = N/2;
-				col = N/2;
-				break;
-		default: row = N;
-				 col = N;
-				 break;
-		}
+		final int NUM_THREAD = 1; //Define number of threads to be used
 		
-		*/
 		int[][] A = matrix.fill(N);
 		int[][] B = matrix.fill(N);
 		int[][] C = new int [N][N];
 		int threadct = 0;
 		//Do multithreading
-		double timeBeforeMult = System.currentTimeMillis();
 		Thread t = new Thread(new Worker(0, NUM_THREAD, N, A, B, C));
-		Thread t2 = new Thread(new Worker(1, NUM_THREAD, N, A, B, C));
-		Thread t3 = new Thread(new Worker(2, NUM_THREAD, N, A, B, C));
-		Thread t4 = new Thread(new Worker(3, NUM_THREAD, N, A, B, C));
+		
+		Thread t2_0 = new Thread(new Worker(0, NUM_THREAD*2, N, A, B, C));
+		Thread t2_1 = new Thread(new Worker(1, NUM_THREAD*2, N, A, B, C));
+		
+		Thread t3_0 = new Thread(new Worker(0, NUM_THREAD*4, N, A, B, C));
+		Thread t3_1 = new Thread(new Worker(1, NUM_THREAD*4, N, A, B, C));
+		Thread t3_2 = new Thread(new Worker(2, NUM_THREAD*4, N, A, B, C));
+		Thread t3_3 = new Thread(new Worker(3, NUM_THREAD*4, N, A, B, C));
+		
+		
+		//////////////////CASE 1/////////////////////////////////////
+		System.out.println("Case 1: (1 thread, N = 2000)");
+		double timeBeforeMult = System.currentTimeMillis();
 		t.start();
-		t2.start();
-		t3.start();
-		t4.start();
 		t.join();
-		t2.join();
-		t3.join();
-		t4.join();
 		double timeAfterMult = System.currentTimeMillis();
 		double runTime = timeAfterMult - timeBeforeMult;
-		System.out.println("Matrix A:");
-		matrix.print(A, N);
-		System.out.println("Matrix B:");
-		matrix.print(B, N);
 		System.out.println("Run time (ms):" +runTime);
-		System.out.println("Matrix C (multiplied):");
-		matrix.print(C, N);
-		System.out.println("Matrix C (tweaked):");
-		matrix.divideByTwo(C, N);
-		matrix.print(C, N);
+		
+		//////////////////CASE 2/////////////////////////////////////
+		System.out.println("Case 2: (2 threads, N = 2000)");
+		double timeBeforeMult2 = System.currentTimeMillis();
+		t2_0.start();
+		t2_1.start();
+		t2_0.join();
+		t2_1.join();
+		double timeAfterMult2 = System.currentTimeMillis();
+		double runTime2 = timeAfterMult2 - timeBeforeMult2;
+		System.out.println("Run time (ms):" +runTime2);
+		//////////////////CASE 3/////////////////////////////////////
+		System.out.println("Case 3: (4 threads, N = 2000)");
+		double timeBeforeMult3 = System.currentTimeMillis();
+		t3_0.start();
+		t3_1.start();
+		t3_2.start();
+		t3_3.start();
+		t3_0.join();
+		t3_1.join();
+		t3_2.join();
+		t3_3.join();
+		double timeAfterMult3 = System.currentTimeMillis();
+		double runTime3 = timeAfterMult3 - timeBeforeMult3;
+		System.out.println("Run time (ms):" +runTime3);
+		
+		
+	//	System.out.println("Matrix A:");
+	//	matrix.print(A, N);
+	//	System.out.println("Matrix B:");
+	//	matrix.print(B, N);
+	//	System.out.println("Matrix C (multiplied):");
+	//	matrix.print(C, N);
 
 	}
 	

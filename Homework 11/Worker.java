@@ -11,7 +11,7 @@ public class Worker implements Runnable {
 	
 	public Worker (int ID, int numThrd, int N, int[][] A, int[][] B, int[][] C) {
 		
-		this.row = N/2;
+		this.row = N/2; //was N/2
 		this.col = N;
 		this.rowStart = 0;
 		this.colStart = 0;
@@ -20,6 +20,7 @@ public class Worker implements Runnable {
 		this.B = B;
 		this.C = C;
 		this.ID = ID;
+		if (numThrd == 1) { this.row = N; }
 
 		if (numThrd == 2) {
 			if (ID == 1) {
