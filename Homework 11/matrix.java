@@ -2,11 +2,10 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class matrix {
-	
+
 	//Function to fill in an array with a given input size
 	//Input size has to be divisible by two, if not, alert the user and prompt for input
-	public static int[][] fill(int N){ //throws IOException{
-		if (N %2 != 0) {} //throw new IOException(N+" is not divisible by 2!");}
+	public static int[][] fill(int N) {
 		int [][] mat = new int[N][N];
 		for (int i = 0; i < N; i++)
 			for (int j = 0; j < N; j++)
@@ -34,24 +33,45 @@ public class matrix {
 		}
 	}
 	
+	public static int getN() {
+		int N = 0;
+		boolean flg = false;
+		Scanner reader = new Scanner(System.in);
+		while (!flg) {
+		System.out.print("Enter a number: ");
+		N = reader.nextInt();
+		if (N % 2 != 0) {
+			System.out.println("ERROR! N is not divisible by 2!"); 
+			flg =  false; 
+			} else { 
+				flg = true; }
+		}
+		return N;
+	}
+	
+	
 	//Main function
 	public static void main(String[] args) throws InterruptedException {
-		int N = 2000;
+		int N = getN();
 		int row = 0;
 		int col = 0;
 		
 		final int NUM_THREAD = 1; //Define number of threads to be used
-		
 		int[][] A = matrix.fill(N);
 		int[][] B = matrix.fill(N);
 		int[][] C = new int [N][N];
 		int threadct = 0;
 		//Do multithreading
+		//1 thread
 		Thread t = new Thread(new Worker(0, NUM_THREAD, N, A, B, C));
 		
+		
+		//2 threads
 		Thread t2_0 = new Thread(new Worker(0, NUM_THREAD*2, N, A, B, C));
 		Thread t2_1 = new Thread(new Worker(1, NUM_THREAD*2, N, A, B, C));
 		
+		
+		//4 threads
 		Thread t3_0 = new Thread(new Worker(0, NUM_THREAD*4, N, A, B, C));
 		Thread t3_1 = new Thread(new Worker(1, NUM_THREAD*4, N, A, B, C));
 		Thread t3_2 = new Thread(new Worker(2, NUM_THREAD*4, N, A, B, C));
@@ -59,7 +79,7 @@ public class matrix {
 		
 		
 		//////////////////CASE 1/////////////////////////////////////
-		System.out.println("Case 1: (1 thread, N = 2000)");
+		System.out.println("Case 1: (1 thread, N = "+N+" ("+N+"x"+N+" matrices)");
 		double timeBeforeMult = System.currentTimeMillis();
 		t.start();
 		t.join();
@@ -68,7 +88,7 @@ public class matrix {
 		System.out.println("Run time (ms):" +runTime);
 		
 		//////////////////CASE 2/////////////////////////////////////
-		System.out.println("Case 2: (2 threads, N = 2000)");
+		System.out.println("Case 2: (2 threads, N = "+N+" ("+N+"x"+N+" matrices)");
 		double timeBeforeMult2 = System.currentTimeMillis();
 		t2_0.start();
 		t2_1.start();
@@ -78,7 +98,7 @@ public class matrix {
 		double runTime2 = timeAfterMult2 - timeBeforeMult2;
 		System.out.println("Run time (ms):" +runTime2);
 		//////////////////CASE 3/////////////////////////////////////
-		System.out.println("Case 3: (4 threads, N = 2000)");
+		System.out.println("Case 3: (4 threads, N = "+N+" ("+N+"x"+N+" matrices)");
 		double timeBeforeMult3 = System.currentTimeMillis();
 		t3_0.start();
 		t3_1.start();
