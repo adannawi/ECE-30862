@@ -26,7 +26,6 @@ public class TileMap {
         sprites = new LinkedList();
     }
 
-
     /**
         Gets the width of this TileMap (number of tiles across).
     */

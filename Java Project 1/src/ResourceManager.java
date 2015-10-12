@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.util.ArrayList;
+
+import javax.sound.midi.Sequence;
 import javax.swing.ImageIcon;
 
 
@@ -24,9 +26,10 @@ public class ResourceManager {
     private Sprite musicSprite;
     private Sprite coinSprite;
     private Sprite goalSprite;
-    private Sprite grubSprite;
+    private static Sprite grubSprite;
     private Sprite flySprite;
-    private Sprite bulletSprite;
+    private static Sprite bulletSprite;
+    private MidiPlayer midiPlayer;
 
     /**
         Creates a new ResourceManager with the specified
@@ -38,8 +41,7 @@ public class ResourceManager {
         loadCreatureSprites();
         loadPowerUpSprites();
     }
-
-
+   
     /**
         Gets an image from the images/ directory.
     */
@@ -84,6 +86,14 @@ public class ResourceManager {
 
 
     public TileMap loadNextMap() {
+        // start music
+        midiPlayer = new MidiPlayer();
+        
+        //First Level music
+        if (currentMap == 0) {
+        Sequence sequence = midiPlayer.getSequence("sounds/music.midi");
+        midiPlayer.play(sequence, true);
+        }
         TileMap map = null;
         while (map == null) {
             currentMap++;
@@ -183,9 +193,31 @@ public class ResourceManager {
 
         return newMap;
     }
+    
+    //CODE TO ALLOW SPAWNING OF SPRITES WILLINGLY
+    public static void spawnSomething(TileMap map) {
+    	Sprite bullet = (Sprite)bulletSprite.clone();
+    	Sprite grub = (Sprite)grubSprite.clone();
+    	Sprite player = map.getPlayer();
+    	
+    	bullet.setX(player.getX() + 10);
+    	bullet.setY(player.getY());
+    	
+    	int dir = 0;
+    	if (((Player) player).facingLeft() == true) { 
+    		dir = -1;
+    	}else{ 
+    		dir = 1;
+    	}
+    	
+    	bullet.setVelocityX(dir * 0.5f);
+    	
+        map.addSprite(bullet);
+        
+    }
 
 
-    private void addSprite(TileMap map,
+    public void addSprite(TileMap map,
         Sprite hostSprite, int tileX, int tileY)
     {
         if (hostSprite != null) {
@@ -234,6 +266,7 @@ public class ResourceManager {
     public void loadCreatureSprites() {
 
         Image[][] images = new Image[4][];
+        //Load bullet image
 
         // load left-facing images
         images[0] = new Image[] {
@@ -245,6 +278,7 @@ public class ResourceManager {
             loadImage("fly3.png"),
             loadImage("grub1.png"),
             loadImage("grub2.png"),
+            loadImage("Beam1Right.png"),
         };
 
         images[1] = new Image[images[0].length];
@@ -263,6 +297,7 @@ public class ResourceManager {
         Animation[] playerAnim = new Animation[4];
         Animation[] flyAnim = new Animation[4];
         Animation[] grubAnim = new Animation[4];
+        Animation[] bulletAnim = new Animation[2]; //Left and right
         for (int i=0; i<4; i++) {
             playerAnim[i] = createPlayerAnim(
                 images[i][0], images[i][1], images[i][2]);
@@ -270,6 +305,10 @@ public class ResourceManager {
                 images[i][3], images[i][4], images[i][5]);
             grubAnim[i] = createGrubAnim(
                 images[i][6], images[i][7]);
+        }
+        
+        for (int i=0; i<2; i++) {
+        	bulletAnim[i] = createBulletAnim(images[i][8]);
         }
 
         // create creature sprites
@@ -279,6 +318,7 @@ public class ResourceManager {
             flyAnim[2], flyAnim[3]);
         grubSprite = new Grub(grubAnim[0], grubAnim[1],
             grubAnim[2], grubAnim[3]);
+        bulletSprite = new Projectile(bulletAnim[0], bulletAnim[1]);
     }
 
 
@@ -314,6 +354,12 @@ public class ResourceManager {
         anim.addFrame(img2, 250);
         return anim;
     }
+    
+    private Animation createBulletAnim(Image bullet) {
+    	Animation anim = new Animation();
+    	anim.addFrame(bullet, 100);
+    	return anim;
+    }
 
 
     private void loadPowerUpSprites() {
@@ -341,5 +387,4 @@ public class ResourceManager {
         anim.addFrame(loadImage("music2.png"), 150);
         musicSprite = new PowerUp.Music(anim);
     }
-
 }

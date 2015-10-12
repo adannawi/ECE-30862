@@ -8,13 +8,41 @@ public class Player extends Creature {
     private int damageMult = 1;
     private int SCORE = 0;   //default score is 0
     private int HEALTH_PT = 100; // base health of 100
-
+    private boolean GOD = false;
+    private boolean isLeft;
+    private boolean isRight;
     private boolean onGround;
 
     public Player(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {
         super(left, right, deadLeft, deadRight);
+    }
+    
+    public void isLeft() {
+    	isLeft = true;
+    	isRight = false;
+    }
+    
+    public void isRight() {
+    	isLeft = false;
+    	isRight = true;
+    }
+    
+    public boolean facingLeft() {
+    	if (isLeft == true) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
+    
+    public void setGOD() {
+    	GOD = true;
+    }
+    
+    public boolean getGOD() {
+    	return GOD;
     }
 
 

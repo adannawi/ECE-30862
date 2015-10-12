@@ -1,6 +1,9 @@
 
 import java.awt.Graphics2D;
+import java.awt.Image;
+
 import javax.swing.*;
+
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
@@ -38,6 +41,7 @@ public class GameManager extends GameCore {
     private Sound shootSound;
     private InputManager inputManager;
     private TileMapRenderer renderer;
+    private Spawner spawn;
 
     private GameAction moveLeft;
     private GameAction moveRight;
@@ -45,7 +49,6 @@ public class GameManager extends GameCore {
     private GameAction exit;
     private GameAction shoot;
     
-    private Sprite bullet;
 
     public void init() {
         super.init();
@@ -63,19 +66,24 @@ public class GameManager extends GameCore {
 
         // load first map
         map = resourceManager.loadNextMap();
+        
+        // MY IDEA
+        spawn = new Spawner();
+        //
 
         // load sounds
         soundManager = new SoundManager(PLAYBACK_FORMAT);
         prizeSound = soundManager.getSound("sounds/prize.wav");
         boopSound = soundManager.getSound("sounds/boop2.wav");
         shootSound = soundManager.getSound("sounds/shoot1.wav");
+       
 
         // start music
-        midiPlayer = new MidiPlayer();
-        Sequence sequence =
-            midiPlayer.getSequence("sounds/music.midi");
-        midiPlayer.play(sequence, true);
-        toggleDrumPlayback();
+       // midiPlayer = new MidiPlayer();
+      //  Sequence sequence =
+      //      midiPlayer.getSequence("sounds/music.midi");
+      //  midiPlayer.play(sequence, true);
+     //   toggleDrumPlayback();
     }
 
 
@@ -109,26 +117,36 @@ public class GameManager extends GameCore {
         inputManager.mapToKey(shoot, KeyEvent.VK_SHIFT);
     }
 
-
+      
+    private int SHIFT = 0;
     private void checkInput(long elapsedTime) {
         if (exit.isPressed()) {
             stop();
         }
+        
 
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) {
             float velocityX = 0;
             if (moveLeft.isPressed()) {
                 velocityX-=player.getMaxSpeed();
+                player.isLeft();
             }
             if (moveRight.isPressed()) {
                 velocityX+=player.getMaxSpeed();
+                player.isRight();
             }
             if (jump.isPressed()) {
                 player.jump(false);
             }
             if (shoot.isPressed()) {
-               soundManager.play(shootSound);
+              soundManager.play(shootSound);
+              System.out.println(SHIFT);
+              SHIFT++;
+              ResourceManager.spawnSomething(getMap());
+            }
+            if (moveLeft.isPressed() && moveRight.isPressed()) {
+               player.setGOD();
             }
             player.setVelocityX(velocityX);
         }
@@ -289,9 +307,26 @@ public class GameManager extends GameCore {
                     updateCreature(creature, elapsedTime);
                 }
             }
+            //Update projectiles
+            if (sprite instanceof Projectile) {
+            	Projectile projectile = (Projectile)sprite;
+            	updateProjectiles(projectile, elapsedTime);
+            }
             // normal update
             sprite.update(elapsedTime);
         }
+    }
+    
+    //Update projectiles currently in map, make sure they despawn when they collide with a tile, if enemy, hurt them
+    private void updateProjectiles(Projectile projectile, long elapsedTime) {
+    	//change x
+    	float dx = projectile.getVelocityX();
+    	float oldX = projectile.getX();
+    	float newX = oldX + dx * elapsedTime;
+    	Point tile = getTileCollision(projectile, newX, projectile.getY());
+    	if (tile == null) {
+    		projectile.setX(newX);
+    	}
     }
 
 
@@ -394,8 +429,10 @@ public class GameManager extends GameCore {
                 player.jump(true);
             }
             else {
-                // player dies!
+                // player dies! (unless godmode)
+            	if (player.getGOD() == false) { 
                 player.setState(Creature.STATE_DYING);
+            	}
             }
         }
     }
@@ -416,7 +453,7 @@ public class GameManager extends GameCore {
         else if (powerUp instanceof PowerUp.Music) {
             // change the music
             soundManager.play(prizeSound);
-            toggleDrumPlayback();
+            //toggleDrumPlayback();
         }
         else if (powerUp instanceof PowerUp.Goal) {
             // advance to next map
