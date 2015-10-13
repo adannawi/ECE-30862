@@ -38,6 +38,7 @@ public class Player extends Creature {
         // check if collided with ground
         if (getVelocityY() > 0) {
             onGround = true;
+            isJumping(false);
         }
         setVelocityY(0);
     }
@@ -47,6 +48,7 @@ public class Player extends Creature {
         // check if falling
         if (Math.round(y) > Math.round(getY())) {
             onGround = false;
+         //   isJumping(true);
         }
         super.setY(y);
     }
@@ -64,6 +66,7 @@ public class Player extends Creature {
     public void jump(boolean forceJump) {
         if (onGround || forceJump) {
             onGround = false;
+            isJumping(!onGround);
             setVelocityY(JUMP_SPEED);
         }
     }

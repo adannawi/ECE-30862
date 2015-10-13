@@ -10,6 +10,7 @@ public class Animation {
     private ArrayList frames;
     private int currFrameIndex;
     private long animTime;
+    private long tempTime;
     private long totalDuration;
 
 
@@ -56,6 +57,22 @@ public class Animation {
     public synchronized void start() {
         animTime = 0;
         currFrameIndex = 0;
+    }
+    
+    //Stop animation from playing
+    public synchronized void stop() {
+    	tempTime = animTime;
+    	animTime = 0;
+    }
+    
+    //Get current frame
+    public int getFrame() {
+    	return currFrameIndex + 1;
+    }
+    
+    //Resume animation
+    public synchronized void resume() {
+    	animTime = tempTime;
     }
 
 

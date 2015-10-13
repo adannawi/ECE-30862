@@ -90,14 +90,6 @@ public class ResourceManager {
 
 
     public TileMap loadNextMap() {
-        // start music
-        midiPlayer = new MidiPlayer();
-        
-        //First Level music
-        if (currentMap == 0) {
-        Sequence sequence = midiPlayer.getSequence("sounds/music.midi");
-        midiPlayer.play(sequence, true);
-        }
         TileMap map = null;
         while (map == null) {
             currentMap++;
@@ -350,8 +342,8 @@ public class ResourceManager {
     	
     	//Create player jump image array
     	for (int i=0; i < playerJump[0].length; i++) {
-    		playerJump[0][i] = PlayerJumpSheet.getSubimage(gridx, gridy, 57, 90);
-    		gridx += 57;
+    		playerJump[0][i] = PlayerJumpSheet.getSubimage(gridx, gridy, 60, 90);
+    		gridx += 60;
     	}
     	
     	gridx = 0;
@@ -475,16 +467,16 @@ public class ResourceManager {
 
     private Animation createPlayerRunAnim(Image play1, Image play2, Image play3, Image play4, Image play5, Image play6, Image play7, Image play8, Image play9, Image play10) {
     	Animation anim = new Animation();
-    	anim.addFrame(play1, 100);
-    	anim.addFrame(play2, 100);
-    	anim.addFrame(play3, 100);
-    	anim.addFrame(play4, 100);
-    	anim.addFrame(play5, 100);
-    	anim.addFrame(play6, 100);
-    	anim.addFrame(play7, 100);
-    	anim.addFrame(play8, 100);
-    	anim.addFrame(play9, 100);
-    	anim.addFrame(play10, 100);
+    	anim.addFrame(play1, 60);
+    	anim.addFrame(play2, 60);
+    	anim.addFrame(play3, 60);
+    	anim.addFrame(play4, 60);
+    	anim.addFrame(play5, 60);
+    	anim.addFrame(play6, 60);
+    	anim.addFrame(play7, 60);
+    	anim.addFrame(play8, 60);
+    	anim.addFrame(play9, 60);
+    	anim.addFrame(play10, 60);
     	
     	return anim;
     }
@@ -494,8 +486,8 @@ public class ResourceManager {
      */
     private Animation createPlayerIdleAnim(Image idle1, Image idle2, Image idle3) {
     	Animation anim = new Animation();
-    	anim.addFrame(idle1, 800);
-    	anim.addFrame(idle2, 800);
+    	anim.addFrame(idle1, 400);
+    	anim.addFrame(idle2, 400);
     	//anim.addFrame(idle3, 500);
     //	anim.addFrame(idle2, 200);
     	return anim;
@@ -506,15 +498,16 @@ public class ResourceManager {
      */
     private Animation createPlayerJumpAnim(Image jump1, Image jump2, Image jump3, Image jump4, Image jump5, Image jump6, Image jump7, Image jump8, Image jump9) {
     	Animation anim = new Animation();
-    	anim.addFrame(jump1, 200);
-    	anim.addFrame(jump2, 200);
-    	anim.addFrame(jump3, 200);
-    	anim.addFrame(jump4, 200);
-    	anim.addFrame(jump5, 200);
-    	anim.addFrame(jump6, 200);
-    	anim.addFrame(jump7, 200);
-    	anim.addFrame(jump8, 200);
-    	anim.addFrame(jump9, 200);
+    	anim.addFrame(jump1, 50);
+    	anim.addFrame(jump2, 50);
+    	anim.addFrame(jump3, 50);
+    	anim.addFrame(jump4, 50);
+    	anim.addFrame(jump5, 50);
+    	anim.addFrame(jump6, 50);
+    	anim.addFrame(jump7, 50);
+    	anim.addFrame(jump8, 50);
+    	anim.addFrame(jump9, 50);
+    //	System.out.println("Created jumping animations!");
     	return anim;
     }
     /**

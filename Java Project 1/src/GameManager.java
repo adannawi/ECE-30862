@@ -80,11 +80,10 @@ public class GameManager extends GameCore {
        
 
         // start music
-       // midiPlayer = new MidiPlayer();
-      //  Sequence sequence =
-      //      midiPlayer.getSequence("sounds/music.midi");
-      //  midiPlayer.play(sequence, true);
-     //   toggleDrumPlayback();
+        midiPlayer = new MidiPlayer();
+        Sequence sequence =  midiPlayer.getSequence("sounds/music.midi");
+        midiPlayer.play(sequence, true);
+      //  toggleDrumPlayback();
     }
 
 
@@ -121,7 +120,6 @@ public class GameManager extends GameCore {
     }
 
       
-    private int SHIFT = 0;
     private void checkInput(long elapsedTime) {
         if (exit.isPressed()) {
             stop();
@@ -144,8 +142,6 @@ public class GameManager extends GameCore {
             }
             if (shoot.isPressed()) {
               soundManager.play(shootSound);
-              System.out.println(SHIFT);
-              SHIFT++;
               ResourceManager.spawnSomething(getMap());
             }
             if (moveLeft.isPressed() && moveRight.isPressed()) {

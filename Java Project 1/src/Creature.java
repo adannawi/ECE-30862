@@ -31,6 +31,7 @@ public abstract class Creature extends Sprite {
     
     private boolean isLeft; //Triggered when creature is facing left
     private boolean isRight; //Triggered when creature is facing right
+    private boolean isJumping = false;
     private int state;
     private int health = 60; //Health that can be removed, creature dies when this hits 0
     private long stateTime;
@@ -183,7 +184,13 @@ public abstract class Creature extends Sprite {
         setVelocityY(0);
     }
     
-    
+    public void isJumping(boolean state) {
+    	if (state) {
+    		isJumping = true;
+    	} else {
+    		isJumping = false;
+    	}
+    }
 
 
     /**
@@ -192,35 +199,64 @@ public abstract class Creature extends Sprite {
     public void update(long elapsedTime) {
         // select the correct Animation
         Animation newAnim = anim;
-        if (getVelocityY() != 0) {
+        
+        //Handle jumping animations, stopping and resuming required when reaching max height and falling down
+        if (isJumping) {
         	if (isLeft) {
-        		newAnim = jumpLeft;
+    			newAnim = jumpLeft;
+        		if (getVelocityY() > 0) {
+        			if(jumpLeft.getFrame() == 5) {
+        			   jumpLeft.stop();
+        			}
+        		}
+        		if (getVelocityY() < 0) {
+        			jumpLeft.resume();
+        		}
         	}
         	if (isRight) {
         		newAnim = jumpRight;
+        		if (getVelocityY() > 0) {
+        			if(jumpRight.getFrame() == 5) {
+        				jumpRight.stop();
+        			}		
+        		}
+        		if (getVelocityY() < 0) {
+        			jumpRight.resume();
+        		}
         	}
         }
-        if (getVelocityX() == 0) {
+        
+        //Spawn idling right
+        if (getVelocityX() == 0 && (!isJumping)) {
         	newAnim = idleRight;
         }
         
-        if ((getVelocityX() == 0) && (isLeft)) {
+        //Idle left animations
+        if ((getVelocityX() == 0) && (isLeft) && (!isJumping)) {
         	newAnim = idleLeft;
         }
         
-        if ((getVelocityX() == 0) && (isRight)) {
+        //Idle right animations
+        if ((getVelocityX() == 0) && (isRight) && (!isJumping)) {
         	newAnim = idleRight;
         }
       
-        if (getVelocityX() < 0) {
+        //Move left
+        if (getVelocityX() < 0 && (!isJumping)) {
             newAnim = left;
         }
-        else if (getVelocityX() > 0) {
+        
+        //Move right
+        else if (getVelocityX() > 0 && (!isJumping)) {
             newAnim = right;
         }
+        
+        //Die left
         if (state == STATE_DYING && newAnim == left) {
             newAnim = deadLeft;
         }
+        
+        //Die right
         else if (state == STATE_DYING && newAnim == right) {
             newAnim = deadRight;
         }
