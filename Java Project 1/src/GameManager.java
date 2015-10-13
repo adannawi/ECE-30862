@@ -278,8 +278,7 @@ public class GameManager extends GameCore {
     */
     public void update(long elapsedTime) {
         Creature player = (Creature)map.getPlayer();
-
-
+       
         // player is dead! start map over
         if (player.getState() == Creature.STATE_DEAD) {
             map = resourceManager.reloadMap();
@@ -292,6 +291,7 @@ public class GameManager extends GameCore {
         // update player
         updateCreature(player, elapsedTime);
         player.update(elapsedTime);
+        System.out.println("("+player.getX()+"),("+player.getY()+")");
 
         // update other sprites
         Iterator i = map.getSprites();
@@ -441,7 +441,8 @@ public class GameManager extends GameCore {
             else {
                 // player dies! (unless godmode)
             	if (player.getGOD() == false) { 
-                player.setState(Creature.STATE_DYING);
+                //player.setState(Creature.STATE_DYING);
+            	  player.getHit();
             	}
             }
         }

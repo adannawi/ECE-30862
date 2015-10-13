@@ -27,6 +27,8 @@ public abstract class Creature extends Sprite {
     private Animation jumpRight; //Jump without pushing movement keys then right
     private Animation flipLeft; //Jump while moving left, causes a flip
     private Animation flipRight; //Jumps while moving right, causes a flip
+    private Animation airShootLeft; //Shooting in the air, left
+    private Animation airShootRight; //Shooting in the air, right
     private Animation morphBall; //Morphball
     
     private boolean isLeft; //Triggered when creature is facing left
@@ -204,23 +206,23 @@ public abstract class Creature extends Sprite {
         if (isJumping) {
         	if (isLeft) {
     			newAnim = jumpLeft;
-        		if (getVelocityY() > 0) {
+        		if (getVelocityY() < 0) {
         			if(jumpLeft.getFrame() == 5) {
         			   jumpLeft.stop();
         			}
         		}
-        		if (getVelocityY() < 0) {
+        		if (getVelocityY() > 0) {
         			jumpLeft.resume();
         		}
         	}
         	if (isRight) {
         		newAnim = jumpRight;
-        		if (getVelocityY() > 0) {
+        		if (getVelocityY() < 0) {
         			if(jumpRight.getFrame() == 5) {
         				jumpRight.stop();
         			}		
         		}
-        		if (getVelocityY() < 0) {
+        		if (getVelocityY() > 0) {
         			jumpRight.resume();
         		}
         	}

@@ -12,12 +12,17 @@ public class Player extends Creature {
     private boolean GOD = false; //God mode parameter
     private boolean onGround; //Is on ground parameter
     private boolean isMorphable; //Morphable paramater, player wont be able to morph ball unless this is true.
+    private boolean hasMissiles; //Missiles parameter, allows player to use missiles.
     
     
     public Player(Animation left, Animation right,
         Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight, Animation jumpLeft, Animation jumpRight)
     {
         super(left, right, deadLeft, deadRight, idleLeft, idleRight, jumpLeft, jumpRight);
+    }
+    
+    public void getHit() {
+    	this.getHit();
     }
     
     public void setGOD() {
