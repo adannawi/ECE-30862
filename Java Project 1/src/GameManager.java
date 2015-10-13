@@ -48,6 +48,7 @@ public class GameManager extends GameCore {
     private GameAction jump;
     private GameAction exit;
     private GameAction shoot;
+    private GameAction crouch;
     
 
     public void init() {
@@ -75,7 +76,7 @@ public class GameManager extends GameCore {
         soundManager = new SoundManager(PLAYBACK_FORMAT);
         prizeSound = soundManager.getSound("sounds/prize.wav");
         boopSound = soundManager.getSound("sounds/boop2.wav");
-        shootSound = soundManager.getSound("sounds/shoot1.wav");
+        shootSound = soundManager.getSound("sounds/prize.wav");
        
 
         // start music
@@ -105,6 +106,7 @@ public class GameManager extends GameCore {
         exit = new GameAction("exit",
             GameAction.DETECT_INITAL_PRESS_ONLY);
         shoot = new GameAction("shoot", GameAction.DETECT_INITAL_PRESS_ONLY);
+        crouch = new GameAction("crouch", GameAction.DETECT_INITAL_PRESS_ONLY);
 
         inputManager = new InputManager(
             screen.getFullScreenWindow());
@@ -112,6 +114,7 @@ public class GameManager extends GameCore {
 
         inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
+        inputManager.mapToKey(crouch, KeyEvent.VK_DOWN);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
         inputManager.mapToKey(shoot, KeyEvent.VK_SHIFT);
@@ -335,6 +338,7 @@ public class GameManager extends GameCore {
     	} else {
     		projectile.impact();
     	}
+    	checkBulletCollision(projectile, true);
     }
 
 
@@ -345,8 +349,10 @@ public class GameManager extends GameCore {
     private void updateCreature(Creature creature,
         long elapsedTime)
     {
-
-        // apply gravity
+    	if (creature.health() < 0) {
+    		creature.setState(Creature.STATE_DYING);
+    	}
+        // apply gravity 
         if (!creature.isFlying()) {
             creature.setVelocityY(creature.getVelocityY() +
                 GRAVITY * elapsedTime);
@@ -443,6 +449,22 @@ public class GameManager extends GameCore {
             	}
             }
         }
+    }
+    
+    /**
+     * Checks to see if the bullets have hit anything that is killable.
+     * @param projectile
+     * @param canKill
+     */
+    public void checkBulletCollision(Projectile projectile, boolean canKill) {
+    	Sprite collisionSprite = getSpriteCollision(projectile);
+    	if (collisionSprite instanceof Creature) {
+    		Creature badguy = (Creature)collisionSprite;
+    		if (canKill) {
+    			badguy.getShot();
+    			projectile.impact();
+    		}
+    	}
     }
 
 

@@ -16,23 +16,30 @@ public abstract class Creature extends Sprite {
     public static final int STATE_NORMAL = 0;
     public static final int STATE_DYING = 1;
     public static final int STATE_DEAD = 2;
-
-    private Animation left;
-    private Animation right;
-    private Animation deadLeft;
-    private Animation deadRight;
-    private Animation idleLeft;
-    private Animation idleRight;
-    private boolean isLeft;
-    private boolean isRight;
+    
+    private Animation left; //Move left
+    private Animation right; //Move right
+    private Animation deadLeft; //Dead while facing left
+    private Animation deadRight; //Dead while facing right
+    private Animation idleLeft; //Idle facing left
+    private Animation idleRight; //Idle facing right
+    private Animation jumpLeft; //Jump without pushing movement keys then left
+    private Animation jumpRight; //Jump without pushing movement keys then right
+    private Animation flipLeft; //Jump while moving left, causes a flip
+    private Animation flipRight; //Jumps while moving right, causes a flip
+    private Animation morphBall; //Morphball
+    
+    private boolean isLeft; //Triggered when creature is facing left
+    private boolean isRight; //Triggered when creature is facing right
     private int state;
+    private int health = 60; //Health that can be removed, creature dies when this hits 0
     private long stateTime;
 
     /**
         Creates a new Creature with the specified Animations.
     */
     public Creature(Animation left, Animation right,
-        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight)
+        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight, Animation jumpLeft, Animation jumpRight)
     {
         super(right);
         this.left = left;
@@ -41,10 +48,22 @@ public abstract class Creature extends Sprite {
         this.deadRight = deadRight;
         this.idleRight = idleRight;
         this.idleLeft = idleLeft;
+        this.jumpLeft = jumpLeft;
+        this.jumpRight = jumpRight;
         state = STATE_NORMAL;
     }
 
-
+    public void setHealth(int health) {
+    	this.health = health;
+    }
+    
+    public void getShot() {
+    	this.health -= 20;
+    }
+    
+    public int health() {
+    	return health;
+    }
     public Object clone() {
         // use reflection to create the correct subclass
         Constructor constructor = getClass().getConstructors()[0];
@@ -56,6 +75,8 @@ public abstract class Creature extends Sprite {
                 (Animation)deadRight.clone(),
                 (Animation)idleLeft.clone(),
                 (Animation)idleRight.clone(),
+                (Animation)jumpLeft.clone(),
+                (Animation)jumpRight.clone()
             });
         }
         catch (Exception ex) {
@@ -171,6 +192,17 @@ public abstract class Creature extends Sprite {
     public void update(long elapsedTime) {
         // select the correct Animation
         Animation newAnim = anim;
+        if (getVelocityY() != 0) {
+        	if (isLeft) {
+        		newAnim = jumpLeft;
+        	}
+        	if (isRight) {
+        		newAnim = jumpRight;
+        	}
+        }
+        if (getVelocityX() == 0) {
+        	newAnim = idleRight;
+        }
         
         if ((getVelocityX() == 0) && (isLeft)) {
         	newAnim = idleLeft;

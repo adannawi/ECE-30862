@@ -206,7 +206,7 @@ public class ResourceManager {
     	
     	//set bullet on position of player
     	bullet.setX(player.getX());
-    	bullet.setY(player.getY());
+    	bullet.setY(player.getY() + (player.getHeight()*0.4f));
     	
     	//check which direction the player is facing
     	int dir = 0;
@@ -277,12 +277,23 @@ public class ResourceManager {
     	
     	BufferedImage playerRunSheet = null;
     	BufferedImage playerIdleSheet = null;
+    	BufferedImage JumpShootSheet = null;
+    	BufferedImage PlayerFlipSheet = null;
+    	BufferedImage PlayerJumpSheet = null;
+    	BufferedImage PlayerMorphSheet = null;
+    	
+    	//Load the spritesheets, if an error occurs, catch it!
     	try {
     	playerRunSheet = ImageIO.read(new File("spritesheet/playerRunLeft.png"));
     	playerIdleSheet = ImageIO.read(new File("spritesheet/playerIdleLeft.png"));
+    	PlayerFlipSheet = ImageIO.read(new File("spritesheet/PlayerFlipLeft.png"));
+    	PlayerJumpSheet = ImageIO.read(new File("spritesheet/PlayerJumpLeft.png"));
+    	JumpShootSheet = ImageIO.read(new File("spritesheet/JumpShootLeft.png"));
+    	PlayerMorphSheet = ImageIO.read(new File("spritesheet/PlayerMorphBall.png"));
     	}  catch (IOException e) {
     		e.printStackTrace();
     	}
+    	////////////////////////////////////////////////////////////////
     	
     	//Initialize player running arrays
     	Image[][] playerRun = new Image[10][];
@@ -296,11 +307,33 @@ public class ResourceManager {
     	playerIdle[0] = new Image[3];
     	playerIdle[1] = new Image[playerIdle[0].length];
     	
+    	//Initialize player jump arrays
+    	Image[][] playerJump = new Image[2][];
+    	playerJump[0] = new Image[9];
+    	playerJump[1] = new Image[playerJump[0].length];
+    	
+    	//Initialize player flip arrays
+    	Image[][] playerFlip = new Image[2][];
+    	playerFlip[0] = new Image[8];
+    	playerFlip[1] = new Image[playerFlip[0].length];
+    	
+    	//Initialize player jump shoot arrays
+    	Image[][] playerJumpShoot = new Image[2][];
+    	playerJumpShoot[0] = new Image[1];
+    	playerJumpShoot[1] = new Image[playerJumpShoot[0].length];
+    	
+    	//Initialize player morph arrays
+    	Image[][] playerMorph = new Image[2][];
+    	playerMorph[0] = new Image[7];
+    	playerMorph[1] = new Image[playerMorph[0].length];
+    	
+    	
+    	///////////////////////////////////////////////////////////////
     	int gridx = 0;
     	int gridy = 0;
     	
     	//Create player running image array
-    	for(int i=0; i < 10; i++) {
+    	for(int i=0; i < playerRun[0].length; i++) {
     		playerRun[0][i] = playerRunSheet.getSubimage(gridx, gridy, 64 , 86); //run left
     		gridx += 70;
     	}
@@ -308,10 +341,21 @@ public class ResourceManager {
     	gridx = 0;
   
     	//Create player idle image array
-    	for(int i=0; i < 3; i++) {
+    	for(int i=0; i < playerIdle[0].length; i++) {
     		playerIdle[0][i] = playerIdleSheet.getSubimage(gridx, gridy, 53, 86); //idle left
     		gridx += 55;
     	}
+    	
+    	gridx = 0;
+    	
+    	//Create player jump image array
+    	for (int i=0; i < playerJump[0].length; i++) {
+    		playerJump[0][i] = PlayerJumpSheet.getSubimage(gridx, gridy, 57, 90);
+    		gridx += 57;
+    	}
+    	
+    	gridx = 0;
+    	////////////////////////////////////////////////////////////////////////////
     	
     	//Create player running sets, playerRun[1] right, [2] left flip, [3] right flip
     	for (int i=0; i<playerRun[0].length; i++) {
@@ -320,9 +364,16 @@ public class ResourceManager {
     		playerRun[3][i] = getFlippedImage(playerRun[1][i]);
     	}
     	
+    	//Create flipped player idle
     	for (int i=0; i<playerIdle[0].length; i++) {
     		playerIdle[1][i] = getMirrorImage(playerIdle[0][i]); //idle right
     	}
+    	
+    	//Create flipped player jump
+    	for (int i=0; i<playerJump[0].length; i++) {
+    		playerJump[1][i] = getMirrorImage(playerJump[0][i]);
+    	}
+    	
 
         //BRACKEENS CODE
     	
@@ -357,6 +408,7 @@ public class ResourceManager {
         Animation[] playerAnim = new Animation[4];
         Animation[] playerRunAnim = new Animation[4];
         Animation[] playerIdleAnim = new Animation[2];
+        Animation[] playerJumpAnim = new Animation[2];
         Animation[] flyAnim = new Animation[4];
         Animation[] grubAnim = new Animation[4];
         Animation[] bulletAnim = new Animation[2]; //Left and right
@@ -381,18 +433,28 @@ public class ResourceManager {
         	bulletAnim[i] = createBulletAnim(images[i][8]);
         }
         
+        for (int i = 0; i < 2; i++) {
+        	playerJumpAnim[i] = createPlayerJumpAnim(playerJump[i][0], playerJump[i][1], playerJump[i][2], playerJump[i][3], playerJump[i][4], playerJump[i][5], playerJump[i][6], playerJump[i][7], playerJump[i][8]);
+        }
+        
 
         // create creature sprites || [left move, right move, left die, right die, idle left, idle right]
       //  playerSprite = new Player(playerAnim[0], playerAnim[1], playerAnim[2], playerAnim[3]);
-        playerSprite = new Player(playerRunAnim[0], playerRunAnim[1], playerRunAnim[2], playerRunAnim[3], playerIdleAnim[0], playerIdleAnim[1]);
+        playerSprite = new Player(playerRunAnim[0], playerRunAnim[1], playerRunAnim[2], playerRunAnim[3], playerIdleAnim[0], playerIdleAnim[1], playerJumpAnim[0], playerJumpAnim[1]);
         flySprite = new Fly(flyAnim[0], flyAnim[1],
-            flyAnim[2], flyAnim[3], flyAnim[3], flyAnim[3]);
+            flyAnim[2], flyAnim[3], flyAnim[3], flyAnim[3], flyAnim[3], flyAnim[3]);
         grubSprite = new Grub(grubAnim[0], grubAnim[1],
-            grubAnim[2], grubAnim[3], grubAnim[3], grubAnim[3]);
+            grubAnim[2], grubAnim[3], grubAnim[3], grubAnim[3], grubAnim[3], grubAnim[3]);
         bulletSprite = new Projectile(bulletAnim[0], bulletAnim[1]);
     }
 
-
+    /**
+     * Unused function as it stands
+     * 
+     * 
+     * 
+     * 
+     */
     private Animation createPlayerAnim(Image player1,
         Image player2, Image player3)
     {
@@ -405,6 +467,11 @@ public class ResourceManager {
         anim.addFrame(player2, 150);
         return anim;
     }
+    
+    /**
+     *  Function that creates the running animation for the player
+	 *
+     */
 
     private Animation createPlayerRunAnim(Image play1, Image play2, Image play3, Image play4, Image play5, Image play6, Image play7, Image play8, Image play9, Image play10) {
     	Animation anim = new Animation();
@@ -422,14 +489,37 @@ public class ResourceManager {
     	return anim;
     }
     
+    /**
+     *  Function that creates the idle animation for the player
+     */
     private Animation createPlayerIdleAnim(Image idle1, Image idle2, Image idle3) {
     	Animation anim = new Animation();
-    	anim.addFrame(idle1, 500);
-    	anim.addFrame(idle2, 300);
-    	anim.addFrame(idle3, 500);
-    	anim.addFrame(idle2, 200);
+    	anim.addFrame(idle1, 800);
+    	anim.addFrame(idle2, 800);
+    	//anim.addFrame(idle3, 500);
+    //	anim.addFrame(idle2, 200);
     	return anim;
     }
+    
+    /**
+     *  Function that creates the jump animations for the player
+     */
+    private Animation createPlayerJumpAnim(Image jump1, Image jump2, Image jump3, Image jump4, Image jump5, Image jump6, Image jump7, Image jump8, Image jump9) {
+    	Animation anim = new Animation();
+    	anim.addFrame(jump1, 200);
+    	anim.addFrame(jump2, 200);
+    	anim.addFrame(jump3, 200);
+    	anim.addFrame(jump4, 200);
+    	anim.addFrame(jump5, 200);
+    	anim.addFrame(jump6, 200);
+    	anim.addFrame(jump7, 200);
+    	anim.addFrame(jump8, 200);
+    	anim.addFrame(jump9, 200);
+    	return anim;
+    }
+    /**
+     * Function that creates animations for flies
+     */
 
     private Animation createFlyAnim(Image img1, Image img2,
         Image img3)
@@ -442,7 +532,9 @@ public class ResourceManager {
         return anim;
     }
 
-
+    /**
+     *  Function that creates animations for grubs
+     */
     private Animation createGrubAnim(Image img1, Image img2) {
         Animation anim = new Animation();
         anim.addFrame(img1, 250);
@@ -450,13 +542,18 @@ public class ResourceManager {
         return anim;
     }
     
+    /**
+     * Function that creates bullet animations
+     */
     private Animation createBulletAnim(Image bullet) {
     	Animation anim = new Animation();
     	anim.addFrame(bullet, 100);
     	return anim;
     }
 
-
+    /**
+     * Load all the power up sprites that are available.
+     */
     private void loadPowerUpSprites() {
         // create "goal" sprite
         Animation anim = new Animation();

@@ -7,16 +7,18 @@ public class Player extends Creature {
     private static final float JUMP_SPEED = -.95f;
     private int damageMult = 1;
     private int SCORE = 0;   //default score is 0
-    private int HEALTH_PT = 100; // base health of 100
-    private boolean GOD = false;
-    private boolean onGround;
-
-    public Player(Animation left, Animation right,
-        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight)
-    {
-        super(left, right, deadLeft, deadRight, idleLeft, idleRight);
-    }
     
+    //Booleans that control paramaters
+    private boolean GOD = false; //God mode parameter
+    private boolean onGround; //Is on ground parameter
+    private boolean isMorphable; //Morphable paramater, player wont be able to morph ball unless this is true.
+    
+    
+    public Player(Animation left, Animation right,
+        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight, Animation jumpLeft, Animation jumpRight)
+    {
+        super(left, right, deadLeft, deadRight, idleLeft, idleRight, jumpLeft, jumpRight);
+    }
     
     public void setGOD() {
     	GOD = true;
@@ -94,14 +96,5 @@ public class Player extends Creature {
 		this.SCORE += sCORE;
 	}
 
-	//HEALTH MANAGING
-	public int getHEALTH_PT() {
-		return HEALTH_PT;
-	}
-
-
-	public void setHEALTH_PT(int hEALTH_PT) {
-		HEALTH_PT = hEALTH_PT;
-	}
 
 }

@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
+import javax.swing.*;
 
 /**
     The InputManager manages input of key and mouse events.
