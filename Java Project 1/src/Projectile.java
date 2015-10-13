@@ -14,6 +14,8 @@ public class Projectile extends Sprite {
     
     private boolean isLeft;
     private boolean isRight;
+    
+    public static int IMPACT = 0;
 
 
     /**
@@ -34,6 +36,18 @@ public class Projectile extends Sprite {
     public void isRight() {
     	isLeft = false;
     	isRight = true;
+    }
+    
+    public void impact() {
+    	IMPACT = 1;
+    }
+    
+    public void clear() {
+    	IMPACT = 0;
+    }
+    
+    public int getImpact() {
+    	return IMPACT;
     }
 
 
@@ -58,7 +72,7 @@ public class Projectile extends Sprite {
         Gets the maximum speed of this Creature.
     */
     public float getMaxSpeed() {
-        return 1;
+        return 5;
     }
 
 

@@ -104,7 +104,7 @@ public class GameManager extends GameCore {
             GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",
             GameAction.DETECT_INITAL_PRESS_ONLY);
-        shoot = new GameAction("shoot");
+        shoot = new GameAction("shoot", GameAction.DETECT_INITAL_PRESS_ONLY);
 
         inputManager = new InputManager(
             screen.getFullScreenWindow());
@@ -311,13 +311,19 @@ public class GameManager extends GameCore {
             if (sprite instanceof Projectile) {
             	Projectile projectile = (Projectile)sprite;
             	updateProjectiles(projectile, elapsedTime);
+            	if (projectile.getImpact() == 1) {
+            		i.remove();
+            		projectile.clear();
+            	}
             }
             // normal update
             sprite.update(elapsedTime);
         }
     }
     
-    //Update projectiles currently in map, make sure they despawn when they collide with a tile, if enemy, hurt them
+    /**Update projectiles currently in map, make sure they despawn when they collide with a tile, if enemy, hurt them
+    * 
+    */
     private void updateProjectiles(Projectile projectile, long elapsedTime) {
     	//change x
     	float dx = projectile.getVelocityX();
@@ -326,6 +332,8 @@ public class GameManager extends GameCore {
     	Point tile = getTileCollision(projectile, newX, projectile.getY());
     	if (tile == null) {
     		projectile.setX(newX);
+    	} else {
+    		projectile.impact();
     	}
     }
 

@@ -9,33 +9,14 @@ public class Player extends Creature {
     private int SCORE = 0;   //default score is 0
     private int HEALTH_PT = 100; // base health of 100
     private boolean GOD = false;
-    private boolean isLeft;
-    private boolean isRight;
     private boolean onGround;
 
     public Player(Animation left, Animation right,
-        Animation deadLeft, Animation deadRight)
+        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight)
     {
-        super(left, right, deadLeft, deadRight);
+        super(left, right, deadLeft, deadRight, idleLeft, idleRight);
     }
     
-    public void isLeft() {
-    	isLeft = true;
-    	isRight = false;
-    }
-    
-    public void isRight() {
-    	isLeft = false;
-    	isRight = true;
-    }
-    
-    public boolean facingLeft() {
-    	if (isLeft == true) {
-    		return true;
-    	} else {
-    		return false;
-    	}
-    }
     
     public void setGOD() {
     	GOD = true;
@@ -87,14 +68,10 @@ public class Player extends Creature {
 
 
     public float getMaxSpeed() {
-        return 0.5f;
+        return 0.24f;
     }
 
 
-	public void shoot() {
-		
-		
-	}
 
 	//DAMAGE MULTIPLIER VALUE SET/GET
 	//USED FOR CHARGED WEAPONS

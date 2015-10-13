@@ -3,6 +3,10 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import javax.sound.midi.Sequence;
 import javax.swing.ImageIcon;
@@ -200,9 +204,11 @@ public class ResourceManager {
     	Sprite grub = (Sprite)grubSprite.clone();
     	Sprite player = map.getPlayer();
     	
-    	bullet.setX(player.getX() + 10);
+    	//set bullet on position of player
+    	bullet.setX(player.getX());
     	bullet.setY(player.getY());
     	
+    	//check which direction the player is facing
     	int dir = 0;
     	if (((Player) player).facingLeft() == true) { 
     		dir = -1;
@@ -210,8 +216,10 @@ public class ResourceManager {
     		dir = 1;
     	}
     	
-    	bullet.setVelocityX(dir * 0.5f);
+    	//set the velocity
+    	bullet.setVelocityX(dir * 1.2f);
     	
+    	//bang!
         map.addSprite(bullet);
         
     }
@@ -264,10 +272,62 @@ public class ResourceManager {
 
 
     public void loadCreatureSprites() {
+    	
+    	//MY CUSTOM SPRITE SHEET LOADING CODE
+    	
+    	BufferedImage playerRunSheet = null;
+    	BufferedImage playerIdleSheet = null;
+    	try {
+    	playerRunSheet = ImageIO.read(new File("spritesheet/playerRunLeft.png"));
+    	playerIdleSheet = ImageIO.read(new File("spritesheet/playerIdleLeft.png"));
+    	}  catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	//Initialize player running arrays
+    	Image[][] playerRun = new Image[10][];
+    	playerRun[0] =  new Image[10];
+    	playerRun[1] =  new Image[playerRun[0].length];
+    	playerRun[2] = new Image[playerRun[0].length];
+    	playerRun[3] = new Image[playerRun[0].length];
+    	
+    	//Initialize player idle arrays
+    	Image[][] playerIdle = new Image[3][];
+    	playerIdle[0] = new Image[3];
+    	playerIdle[1] = new Image[playerIdle[0].length];
+    	
+    	int gridx = 0;
+    	int gridy = 0;
+    	
+    	//Create player running image array
+    	for(int i=0; i < 10; i++) {
+    		playerRun[0][i] = playerRunSheet.getSubimage(gridx, gridy, 64 , 86); //run left
+    		gridx += 70;
+    	}
+    	
+    	gridx = 0;
+  
+    	//Create player idle image array
+    	for(int i=0; i < 3; i++) {
+    		playerIdle[0][i] = playerIdleSheet.getSubimage(gridx, gridy, 53, 86); //idle left
+    		gridx += 55;
+    	}
+    	
+    	//Create player running sets, playerRun[1] right, [2] left flip, [3] right flip
+    	for (int i=0; i<playerRun[0].length; i++) {
+    		playerRun[1][i] = getMirrorImage(playerRun[0][i]); //running right
+    		playerRun[2][i] = getFlippedImage(playerRun[0][i]);
+    		playerRun[3][i] = getFlippedImage(playerRun[1][i]);
+    	}
+    	
+    	for (int i=0; i<playerIdle[0].length; i++) {
+    		playerIdle[1][i] = getMirrorImage(playerIdle[0][i]); //idle right
+    	}
 
+        //BRACKEENS CODE
+    	
         Image[][] images = new Image[4][];
-        //Load bullet image
-
+        
         // load left-facing images
         images[0] = new Image[] {
             loadImage("player1.png"),
@@ -295,6 +355,8 @@ public class ResourceManager {
 
         // create creature animations
         Animation[] playerAnim = new Animation[4];
+        Animation[] playerRunAnim = new Animation[4];
+        Animation[] playerIdleAnim = new Animation[2];
         Animation[] flyAnim = new Animation[4];
         Animation[] grubAnim = new Animation[4];
         Animation[] bulletAnim = new Animation[2]; //Left and right
@@ -307,17 +369,26 @@ public class ResourceManager {
                 images[i][6], images[i][7]);
         }
         
+        for (int i = 0; i < 4; i++) {
+        	playerRunAnim[i] = createPlayerRunAnim(playerRun[i][0], playerRun[i][1], playerRun[i][2], playerRun[i][3], playerRun[i][4], playerRun[i][5], playerRun[i][6], playerRun[i][7], playerRun[i][8], playerRun[i][9]);
+        }
+        
+        for (int i = 0; i < 2; i++){
+        	playerIdleAnim[i] = createPlayerIdleAnim(playerIdle[i][0], playerIdle[i][1], playerIdle[i][2]);
+        }
+        
         for (int i=0; i<2; i++) {
         	bulletAnim[i] = createBulletAnim(images[i][8]);
         }
+        
 
-        // create creature sprites
-        playerSprite = new Player(playerAnim[0], playerAnim[1],
-            playerAnim[2], playerAnim[3]);
+        // create creature sprites || [left move, right move, left die, right die, idle left, idle right]
+      //  playerSprite = new Player(playerAnim[0], playerAnim[1], playerAnim[2], playerAnim[3]);
+        playerSprite = new Player(playerRunAnim[0], playerRunAnim[1], playerRunAnim[2], playerRunAnim[3], playerIdleAnim[0], playerIdleAnim[1]);
         flySprite = new Fly(flyAnim[0], flyAnim[1],
-            flyAnim[2], flyAnim[3]);
+            flyAnim[2], flyAnim[3], flyAnim[3], flyAnim[3]);
         grubSprite = new Grub(grubAnim[0], grubAnim[1],
-            grubAnim[2], grubAnim[3]);
+            grubAnim[2], grubAnim[3], grubAnim[3], grubAnim[3]);
         bulletSprite = new Projectile(bulletAnim[0], bulletAnim[1]);
     }
 
@@ -335,6 +406,30 @@ public class ResourceManager {
         return anim;
     }
 
+    private Animation createPlayerRunAnim(Image play1, Image play2, Image play3, Image play4, Image play5, Image play6, Image play7, Image play8, Image play9, Image play10) {
+    	Animation anim = new Animation();
+    	anim.addFrame(play1, 100);
+    	anim.addFrame(play2, 100);
+    	anim.addFrame(play3, 100);
+    	anim.addFrame(play4, 100);
+    	anim.addFrame(play5, 100);
+    	anim.addFrame(play6, 100);
+    	anim.addFrame(play7, 100);
+    	anim.addFrame(play8, 100);
+    	anim.addFrame(play9, 100);
+    	anim.addFrame(play10, 100);
+    	
+    	return anim;
+    }
+    
+    private Animation createPlayerIdleAnim(Image idle1, Image idle2, Image idle3) {
+    	Animation anim = new Animation();
+    	anim.addFrame(idle1, 500);
+    	anim.addFrame(idle2, 300);
+    	anim.addFrame(idle3, 500);
+    	anim.addFrame(idle2, 200);
+    	return anim;
+    }
 
     private Animation createFlyAnim(Image img1, Image img2,
         Image img3)

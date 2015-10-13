@@ -6,9 +6,9 @@
 public class Fly extends Creature {
 
     public Fly(Animation left, Animation right,
-        Animation deadLeft, Animation deadRight)
+        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight)
     {
-        super(left, right, deadLeft, deadRight);
+        super(left, right, deadLeft, deadRight, idleLeft, idleRight);
     }
 
 

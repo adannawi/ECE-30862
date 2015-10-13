@@ -21,6 +21,10 @@ public abstract class Creature extends Sprite {
     private Animation right;
     private Animation deadLeft;
     private Animation deadRight;
+    private Animation idleLeft;
+    private Animation idleRight;
+    private boolean isLeft;
+    private boolean isRight;
     private int state;
     private long stateTime;
 
@@ -28,13 +32,15 @@ public abstract class Creature extends Sprite {
         Creates a new Creature with the specified Animations.
     */
     public Creature(Animation left, Animation right,
-        Animation deadLeft, Animation deadRight)
+        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight)
     {
         super(right);
         this.left = left;
         this.right = right;
         this.deadLeft = deadLeft;
         this.deadRight = deadRight;
+        this.idleRight = idleRight;
+        this.idleLeft = idleLeft;
         state = STATE_NORMAL;
     }
 
@@ -47,7 +53,9 @@ public abstract class Creature extends Sprite {
                 (Animation)left.clone(),
                 (Animation)right.clone(),
                 (Animation)deadLeft.clone(),
-                (Animation)deadRight.clone()
+                (Animation)deadRight.clone(),
+                (Animation)idleLeft.clone(),
+                (Animation)idleRight.clone(),
             });
         }
         catch (Exception ex) {
@@ -55,6 +63,25 @@ public abstract class Creature extends Sprite {
             ex.printStackTrace();
             return null;
         }
+    }
+    
+    
+    public void isLeft() {
+    	isLeft = true;
+    	isRight = false;
+    }
+    
+    public void isRight() {
+    	isLeft = false;
+    	isRight = true;
+    }
+    
+    public boolean facingLeft() {
+    	if (isLeft == true) {
+    		return true;
+    	} else {
+    		return false;
+    	}
     }
 
 
@@ -134,6 +161,8 @@ public abstract class Creature extends Sprite {
     public void collideVertical() {
         setVelocityY(0);
     }
+    
+    
 
 
     /**
@@ -142,6 +171,15 @@ public abstract class Creature extends Sprite {
     public void update(long elapsedTime) {
         // select the correct Animation
         Animation newAnim = anim;
+        
+        if ((getVelocityX() == 0) && (isLeft)) {
+        	newAnim = idleLeft;
+        }
+        
+        if ((getVelocityX() == 0) && (isRight)) {
+        	newAnim = idleRight;
+        }
+      
         if (getVelocityX() < 0) {
             newAnim = left;
         }

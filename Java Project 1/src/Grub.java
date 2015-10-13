@@ -5,9 +5,9 @@
 public class Grub extends Creature {
 
     public Grub(Animation left, Animation right,
-        Animation deadLeft, Animation deadRight)
+        Animation deadLeft, Animation deadRight, Animation idleLeft, Animation idleRight)
     {
-        super(left, right, deadLeft, deadRight);
+        super(left, right, deadLeft, deadRight, idleLeft, idleRight);
     }
 
 
