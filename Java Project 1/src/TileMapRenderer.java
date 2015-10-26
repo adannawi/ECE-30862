@@ -65,7 +65,7 @@ public class TileMapRenderer {
         Sets the background to draw.
     */
     public void setBackground(Image background) {
-        this.background = background;
+        this.background = null; //background;
     }
 
 
@@ -76,6 +76,7 @@ public class TileMapRenderer {
         int screenWidth, int screenHeight)
     {
         Sprite player = map.getPlayer();
+        //player.displayHealth(g, 20, true);
         int mapWidth = tilesToPixels(map.getWidth());
 
         // get the scrolling position of the map

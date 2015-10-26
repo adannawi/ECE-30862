@@ -4,6 +4,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 /**
     The ScreenManager class manages initializing and displaying
@@ -176,6 +177,7 @@ public class ScreenManager {
             if (!strategy.contentsLost()) {
                 strategy.show();
             }
+
         }
         // Sync the display on some systems.
         // (on Linux, this fixes event queue problems)

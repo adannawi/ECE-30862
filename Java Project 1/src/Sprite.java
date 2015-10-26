@@ -1,4 +1,5 @@
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 
 public class Sprite {
@@ -109,6 +110,15 @@ public class Sprite {
     */
     public Image getImage() {
         return anim.getImage();
+    }
+    
+    public void displayHealth(Graphics2D g, int health, boolean state) {
+    	if (state == true) {
+    	  	String healthStr = ""+health;
+    		g.drawString(healthStr, this.x, this.y + 10);
+    	} else {
+    		g.drawString("", 0, 0);
+    	}
     }
 
     /**

@@ -7,6 +7,7 @@ public class Player extends Creature {
     private static final float JUMP_SPEED = -.95f;
     private int damageMult = 1;
     private int SCORE = 0;   //default score is 0
+    private int maxHealth = 40; //max health is 40 for players
     
     //Booleans that control paramaters
     private boolean GOD = false; //God mode parameter
@@ -21,9 +22,6 @@ public class Player extends Creature {
         super(left, right, deadLeft, deadRight, idleLeft, idleRight, jumpLeft, jumpRight);
     }
     
-    public void getHit() {
-    	this.getHit();
-    }
     
     public void setGOD() {
     	GOD = true;

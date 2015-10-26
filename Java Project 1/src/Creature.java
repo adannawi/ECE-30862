@@ -35,7 +35,7 @@ public abstract class Creature extends Sprite {
     private boolean isRight; //Triggered when creature is facing right
     private boolean isJumping = false;
     private int state;
-    private int health = 60; //Health that can be removed, creature dies when this hits 0
+    private int health = 0; //Health that can be removed, creature dies when this hits 0
     private long stateTime;
 
     /**

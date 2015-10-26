@@ -76,7 +76,7 @@ public class GameManager extends GameCore {
         soundManager = new SoundManager(PLAYBACK_FORMAT);
         prizeSound = soundManager.getSound("sounds/prize.wav");
         boopSound = soundManager.getSound("sounds/boop2.wav");
-        shootSound = soundManager.getSound("sounds/prize.wav");
+        shootSound = soundManager.getSound("sounds/shoot1.wav");
        
 
         // start music
@@ -104,7 +104,7 @@ public class GameManager extends GameCore {
             GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",
             GameAction.DETECT_INITAL_PRESS_ONLY);
-        shoot = new GameAction("shoot", GameAction.DETECT_INITAL_PRESS_ONLY);
+        shoot = new GameAction("shoot");
         crouch = new GameAction("crouch", GameAction.DETECT_INITAL_PRESS_ONLY);
 
         inputManager = new InputManager(
@@ -119,14 +119,33 @@ public class GameManager extends GameCore {
         inputManager.mapToKey(shoot, KeyEvent.VK_SHIFT);
     }
 
-      
+    //VARIABLES FOR CHECKINPUT, UNSURE HOW TO DECLARE OTHERWISE
+    private long timer = 2000;
+    private int bulletCounter = 0;
+    private long eventTime = 0;
+    private long coolDownTime = 0;
+    private boolean isCooling = false;
+   	boolean prevState = false;
+    
     private void checkInput(long elapsedTime) {
+
+    	if (((System.currentTimeMillis() - eventTime) > 20) && !isCooling) {
+    		timer = 2000;
+    		bulletCounter = 0;
+    	}
+    	
+    	if ((( System.currentTimeMillis() - coolDownTime) > 1000) && isCooling) {
+    		bulletCounter = 0;
+    		isCooling = false;
+    	}
+
         if (exit.isPressed()) {
             stop();
         }
         
 
         Player player = (Player)map.getPlayer();
+        System.out.println("Health: ["+player.health()+"]");
         if (player.isAlive()) {
             float velocityX = 0;
             if (moveLeft.isPressed()) {
@@ -141,14 +160,27 @@ public class GameManager extends GameCore {
                 player.jump(false);
             }
             if (shoot.isPressed()) {
-              soundManager.play(shootSound);
-              ResourceManager.spawnSomething(getMap());
+            	if (timer % 500 != 0) {
+                   //do nothing if modulo isnt 0 		
+            	}else if(!isCooling){
+            		if (bulletCounter == 10) { //check if 10 bullets have been fired
+            			isCooling = true;
+            			coolDownTime = System.currentTimeMillis();
+            		}
+            			soundManager.play(shootSound);
+            			ResourceManager.spawnSomething(getMap());       
+            			prevState = true;
+            			bulletCounter++;
+            	}
+            	eventTime =  System.currentTimeMillis();
+            	timer+=100;
             }
             if (moveLeft.isPressed() && moveRight.isPressed()) {
-               player.setGOD();
+            	//do nothing
             }
             player.setVelocityX(velocityX);
         }
+        
 
     }
 
@@ -291,7 +323,6 @@ public class GameManager extends GameCore {
         // update player
         updateCreature(player, elapsedTime);
         player.update(elapsedTime);
-        System.out.println("("+player.getX()+"),("+player.getY()+")");
 
         // update other sprites
         Iterator i = map.getSprites();
@@ -442,7 +473,7 @@ public class GameManager extends GameCore {
                 // player dies! (unless godmode)
             	if (player.getGOD() == false) { 
                 //player.setState(Creature.STATE_DYING);
-            	  player.getHit();
+            	  player.getShot();
             	}
             }
         }
