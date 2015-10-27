@@ -8,6 +8,9 @@ public class Sprite {
     // position (pixels)
     private float x;
     private float y;
+    
+    private float spawnX;
+    private float spawnY;
     // velocity (pixels per millisecond)
     private float dx;
     private float dy;
@@ -55,6 +58,18 @@ public class Sprite {
     */
     public void setY(float y) {
         this.y = y;
+    }
+    
+    public void setSpawnX(float x) {
+    	this.spawnX = x;
+    }
+    
+    public void setSpawnY(float y) {
+    	this.spawnY = y;
+    }
+    
+    public float getSpawnX() {
+    	return this.spawnX;
     }
 
     /**

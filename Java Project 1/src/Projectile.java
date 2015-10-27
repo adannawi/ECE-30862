@@ -15,6 +15,7 @@ public class Projectile extends Sprite {
     private boolean isLeft;
     private boolean isRight;
     
+    
     public static int IMPACT = 0;
 
 

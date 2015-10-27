@@ -116,7 +116,7 @@ public class GameManager extends GameCore {
         inputManager.mapToKey(crouch, KeyEvent.VK_DOWN);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
-        inputManager.mapToKey(shoot, KeyEvent.VK_SHIFT);
+        inputManager.mapToKey(shoot, KeyEvent.VK_S);
     }
 
     //VARIABLES FOR CHECKINPUT, UNSURE HOW TO DECLARE OTHERWISE
@@ -145,7 +145,9 @@ public class GameManager extends GameCore {
         
 
         Player player = (Player)map.getPlayer();
-        System.out.println("Health: ["+player.health()+"]");
+        
+      //  System.out.println("Health: ["+player.health()+"]");
+        
         if (player.isAlive()) {
             float velocityX = 0;
             if (moveLeft.isPressed()) {
@@ -333,7 +335,31 @@ public class GameManager extends GameCore {
                 if (creature.getState() == Creature.STATE_DEAD) {
                     i.remove();
                 }
-                else {
+                else { //Make the monsters chase the player
+                	if (Math.abs(player.getX() - creature.getX()) < 500) { //is within 500 units
+                		if (creature instanceof Fly) {
+                			if (player.getY() < creature.getY()) { 
+                				creature.setVelocityY(-0.02f);
+                			}
+                			if (player.getY() > creature.getY()) {
+                				creature.setVelocityY(0.02f);
+                			}
+                		}
+                		
+                	if (((player.getX() < creature.getX()))){  //is player to the left of creature
+                		if (creature instanceof Fly) {  //is this creature a fly
+                		creature.setVelocityX(-creature.getMaxSpeed()/1.8f); //slow it down so player can jump away and not get rekt
+                		}else{	//creature isn't a fly, good, let it chase at full speed
+            			creature.setVelocityX(-creature.getMaxSpeed());
+                		}
+                	} else if (((player.getX() > creature.getX()))){  //is player to the left of creature
+                		if (creature instanceof Fly) {  //is this creature a fly
+                		creature.setVelocityX(creature.getMaxSpeed()/1.8f); //slow it down so player can jump away and not get rekt  
+                		}else{	//creature isn't a fly, good, let it chase at full speed
+            			creature.setVelocityX(creature.getMaxSpeed());
+                		}
+                	}
+                	}
                     updateCreature(creature, elapsedTime);
                 }
             }
@@ -360,6 +386,9 @@ public class GameManager extends GameCore {
     	float oldX = projectile.getX();
     	float newX = oldX + dx * elapsedTime;
     	Point tile = getTileCollision(projectile, newX, projectile.getY());
+    	if ((newX - projectile.getSpawnX())> 640) { //Make the bullets fizzle out after 10 tiles
+    		projectile.impact();
+    	}
     	if (tile == null) {
     		projectile.setX(newX);
     	} else {
@@ -389,6 +418,9 @@ public class GameManager extends GameCore {
         float dx = creature.getVelocityX();
         float oldX = creature.getX();
         float newX = oldX + dx * elapsedTime;
+        
+        if (newX < oldX) { creature.isLeft(); }
+        if (newX > oldX) { creature.isRight(); }
         Point tile =
             getTileCollision(creature, newX, creature.getY());
         if (tile == null) {
@@ -436,6 +468,7 @@ public class GameManager extends GameCore {
             boolean canKill = (oldY < creature.getY());
             checkPlayerCollision((Player)creature, canKill);
         }
+        
 
     }
 

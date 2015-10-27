@@ -199,10 +199,35 @@ public class ResourceManager {
     	//set bullet on position of player
     	bullet.setX(player.getX());
     	bullet.setY(player.getY() + (player.getHeight()*0.4f));
+    	bullet.setSpawnX(player.getX());
     	
     	//check which direction the player is facing
     	int dir = 0;
     	if (((Player) player).facingLeft() == true) { 
+    		dir = -1;
+    	}else{ 
+    		dir = 1;
+    	}
+    	
+    	//set the velocity
+    	bullet.setVelocityX(dir * 1.2f);
+    	
+    	//bang!
+        map.addSprite(bullet);
+        
+    }
+    
+    public static void shootPlayer(TileMap map, Creature creature) {
+       	Sprite bullet = (Sprite)bulletSprite.clone();
+    	
+    	//set bullet on position of player
+    	bullet.setX(creature.getX());
+    	bullet.setY(creature.getY() + (creature.getHeight()*0.4f));
+    	bullet.setSpawnX(creature.getX());
+    	
+    	//check which direction the player is facing
+    	int dir = 0;
+    	if (creature.facingLeft() == true) { 
     		dir = -1;
     	}else{ 
     		dir = 1;
