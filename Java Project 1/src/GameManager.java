@@ -68,9 +68,6 @@ public class GameManager extends GameCore {
         // load first map
         map = resourceManager.loadNextMap();
         
-        // MY IDEA
-        spawn = new Spawner();
-        //
 
         // load sounds
         soundManager = new SoundManager(PLAYBACK_FORMAT);
@@ -312,7 +309,6 @@ public class GameManager extends GameCore {
     */
     public void update(long elapsedTime) {
         Creature player = (Creature)map.getPlayer();
-       
         // player is dead! start map over
         if (player.getState() == Creature.STATE_DEAD) {
             map = resourceManager.reloadMap();
@@ -332,11 +328,15 @@ public class GameManager extends GameCore {
             Sprite sprite = (Sprite)i.next();
             if (sprite instanceof Creature) {
                 Creature creature = (Creature)sprite;
+                
                 if (creature.getState() == Creature.STATE_DEAD) {
+                	player.addHealth(5);             	
+                	System.out.println("Boop! New health: "+player.health());
                     i.remove();
                 }
                 else { //Make the monsters chase the player
                 	if (Math.abs(player.getX() - creature.getX()) < 500) { //is within 500 units
+                		System.out.println("Player: ["+player.health()+"] Nearest Enemy: ["+creature.health()+"]");
                 		if (creature instanceof Fly) {
                 			if (player.getY() < creature.getY()) { 
                 				creature.setVelocityY(-0.02f);
@@ -352,11 +352,20 @@ public class GameManager extends GameCore {
                 		}else{	//creature isn't a fly, good, let it chase at full speed
             			creature.setVelocityX(-creature.getMaxSpeed());
                 		}
-                	} else if (((player.getX() > creature.getX()))){  //is player to the left of creature
-                		if (creature instanceof Fly) {  //is this creature a fly
-                		creature.setVelocityX(creature.getMaxSpeed()/1.8f); //slow it down so player can jump away and not get rekt  
-                		}else{	//creature isn't a fly, good, let it chase at full speed
+                	} else if (((player.getX() > creature.getX()))){  
+                		if (creature instanceof Fly) { 
+                		creature.setVelocityX(creature.getMaxSpeed()/1.8f);
+                		}else{
             			creature.setVelocityX(creature.getMaxSpeed());
+                		}
+                	}
+                	
+                	if (Math.abs(player.getX() - creature.getX()) < 100){ // once within 100 meters do this
+                		if (player.getX() < creature.getX()) {
+                	 //   	ResourceManager.shootPlayer(map, creature); //crashes
+                		}
+                		if (player.getX() > creature.getX()) {
+                 	//	   ResourceManager.spawnSomething(map); //crashes
                 		}
                 	}
                 	}
@@ -407,6 +416,8 @@ public class GameManager extends GameCore {
     {
     	if (creature.health() < 0) {
     		creature.setState(Creature.STATE_DYING);
+    		creature.setVelocityX(0);
+    		creature.setVelocityY(0);
     	}
         // apply gravity 
         if (!creature.isFlying()) {
@@ -418,6 +429,7 @@ public class GameManager extends GameCore {
         float dx = creature.getVelocityX();
         float oldX = creature.getX();
         float newX = oldX + dx * elapsedTime;
+        
         
         if (newX < oldX) { creature.isLeft(); }
         if (newX > oldX) { creature.isRight(); }
@@ -462,7 +474,18 @@ public class GameManager extends GameCore {
                 creature.setY(
                     TileMapRenderer.tilesToPixels(tile.y + 1));
             }
-            creature.collideVertical();
+            creature.collideVertical();        
+        }
+        
+        //Set max health and enforce it for player and enemies
+        if (creature instanceof Player) {
+        	if (creature.health() > creature.maxHealthPlayer()) {
+        		creature.setHealth(creature.maxHealthPlayer());
+        	}
+        }else{
+        	if (creature.health() > creature.maxHealthEnemy()) {
+        		creature.setHealth(creature.maxHealthEnemy());
+        	}
         }
         if (creature instanceof Player) {
             boolean canKill = (oldY < creature.getY());
@@ -506,7 +529,9 @@ public class GameManager extends GameCore {
                 // player dies! (unless godmode)
             	if (player.getGOD() == false) { 
                 //player.setState(Creature.STATE_DYING);
-            	  player.getShot();
+            	  player.getHit(1);
+                  System.out.println("Player Health: "+player.health());
+                  
             	}
             }
         }
@@ -522,7 +547,7 @@ public class GameManager extends GameCore {
     	if (collisionSprite instanceof Creature) {
     		Creature badguy = (Creature)collisionSprite;
     		if (canKill) {
-    			badguy.getShot();
+    			badguy.getHit(30);
     			projectile.impact();
     		}
     	}

@@ -36,6 +36,8 @@ public abstract class Creature extends Sprite {
     private boolean isJumping = false;
     private int state;
     private int health = 60; //Health that can be removed, creature dies when this hits 0
+    private int maxHealthPlayer = 30;
+    private int maxHealthEnemy = 10;
     private long stateTime;
 
     /**
@@ -55,13 +57,25 @@ public abstract class Creature extends Sprite {
         this.jumpRight = jumpRight;
         state = STATE_NORMAL;
     }
+    
+    public int maxHealthPlayer() {
+    	return this.maxHealthPlayer;
+    }
+    
+    public int maxHealthEnemy() {
+    	return this.maxHealthEnemy;
+    }
 
     public void setHealth(int health) {
     	this.health = health;
     }
     
-    public void getShot() {
-    	this.health -= 20;
+    public void addHealth(int points) {
+    	this.health = this.health + points;
+    }
+    
+    public void getHit(int damage) {
+    	this.health -= damage;
     }
     
     public int health() {
