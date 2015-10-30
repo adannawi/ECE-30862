@@ -14,7 +14,7 @@
                        o o o        o o o       o     o      o 
                       IIIIIII      IIIIIII        o     o         2
                                                   o        2
-                                  2                 BBB
+                                  2                 BBBBBBBBBBB
                        BB                           BBB
-        BB  1    BB       1           1            BBBB     *
-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+        BB  1    BB       1           1         BBBB     *
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB

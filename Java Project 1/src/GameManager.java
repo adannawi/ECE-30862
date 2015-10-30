@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
@@ -62,8 +63,8 @@ public class GameManager extends GameCore {
 
         // load resources
         renderer = new TileMapRenderer();
-        renderer.setBackground(
-            resourceManager.loadImage("background.png"));
+        renderer.setBackground( null);
+            //resourceManager.loadImage("background.png"));
 
         // load first map
         map = resourceManager.loadNextMap();
@@ -81,6 +82,7 @@ public class GameManager extends GameCore {
         Sequence sequence =  midiPlayer.getSequence("sounds/music.midi");
         midiPlayer.play(sequence, true);
       //  toggleDrumPlayback();
+        
     }
 
 
@@ -121,6 +123,9 @@ public class GameManager extends GameCore {
     private int bulletCounter = 0;
     private long eventTime = 0;
     private long coolDownTime = 0;
+    private long hitTime = 0;
+    private long idleTime = 0;
+    
     private boolean isCooling = false;
    	boolean prevState = false;
     
@@ -143,7 +148,6 @@ public class GameManager extends GameCore {
 
         Player player = (Player)map.getPlayer();
         
-      //  System.out.println("Health: ["+player.health()+"]");
         
         if (player.isAlive()) {
             float velocityX = 0;
@@ -187,6 +191,29 @@ public class GameManager extends GameCore {
     public void draw(Graphics2D g) {
         renderer.draw(g, map,
             screen.getWidth(), screen.getHeight());
+        Creature player = (Creature)map.getPlayer();
+        String health = ""+player.health();
+        //display health
+        g.setColor(Color.WHITE);
+        g.drawString("Health:"+health, screen.getWidth()/10, screen.getHeight()/6);
+        
+        //debugging
+        g.setColor(Color.RED);
+        g.drawString("Idle Count"+(System.currentTimeMillis() - idleTime), screen.getWidth()/10, screen.getHeight()/7);
+        
+        g.setColor(Color.BLUE);
+        g.drawString("Immunity:"+(System.currentTimeMillis() - hitTime), screen.getWidth()/10, screen.getHeight()/8);
+        
+        g.setColor(Color.CYAN);
+        g.drawString("X Velocity: "+player.getVelocityX()+" Y Velocity: "+player.getVelocityY(), screen.getWidth()/10, screen.getHeight()/5);
+        
+        g.setColor(Color.GREEN);
+        g.drawString("Idle State:"+player.getIdle(), screen.getWidth()/10, screen.getHeight()/4);
+        
+        g.setColor(Color.RED);
+        g.drawString("(X,Y): ("+player.getX()+","+player.getY()+")", screen.getWidth()/10, screen.getHeight()/3);
+        
+        
     }
 
 
@@ -309,11 +336,43 @@ public class GameManager extends GameCore {
     */
     public void update(long elapsedTime) {
         Creature player = (Creature)map.getPlayer();
+        Graphics2D g = screen.getGraphics();
         // player is dead! start map over
         if (player.getState() == Creature.STATE_DEAD) {
             map = resourceManager.reloadMap();
             return;
         }
+        
+        //Increment health by 1 for every tile walked on
+        if (Math.abs(player.getX() - player.getSpawnX()) > 64) {
+           player.setSpawnX(player.getX());
+           player.addHealth(1);
+        }
+        
+        //Check if 1 second passed for immunity
+        if (((System.currentTimeMillis() - hitTime) % 1000) == 0) {
+        	player.setImmunity(false);
+        }
+        
+        //Check if player is idle
+        if (player.getVelocityX() == 0 && player.getVelocityY() < 0.2) {
+        	player.setIdle(true);
+        } else {player.setIdle(false);}
+        
+        //Get start time
+        if (!player.getIdle()){
+        	idleTime = System.currentTimeMillis();
+        }
+        //Cheese it up, baby!
+        if (player.getIdle()) {
+        		if ((System.currentTimeMillis() - idleTime > 1000)) {
+        				player.addHealth(1);
+        				idleTime = System.currentTimeMillis();
+        			}
+        }
+        
+        System.out.println((System.currentTimeMillis() - idleTime) % 1000);
+       
 
         // get keyboard/mouse input
         checkInput(elapsedTime);
@@ -331,12 +390,10 @@ public class GameManager extends GameCore {
                 
                 if (creature.getState() == Creature.STATE_DEAD) {
                 	player.addHealth(5);             	
-                	System.out.println("Boop! New health: "+player.health());
                     i.remove();
                 }
                 else { //Make the monsters chase the player
                 	if (Math.abs(player.getX() - creature.getX()) < 500) { //is within 500 units
-                		System.out.println("Player: ["+player.health()+"] Nearest Enemy: ["+creature.health()+"]");
                 		if (creature instanceof Fly) {
                 			if (player.getY() < creature.getY()) { 
                 				creature.setVelocityY(-0.02f);
@@ -362,7 +419,7 @@ public class GameManager extends GameCore {
                 	
                 	if (Math.abs(player.getX() - creature.getX()) < 100){ // once within 100 meters do this
                 		if (player.getX() < creature.getX()) {
-                	 //   	ResourceManager.shootPlayer(map, creature); //crashes
+                	//       ResourceManager.shootPlayer(map, creature); //crashes
                 		}
                 		if (player.getX() > creature.getX()) {
                  	//	   ResourceManager.spawnSomething(map); //crashes
@@ -414,6 +471,8 @@ public class GameManager extends GameCore {
     private void updateCreature(Creature creature,
         long elapsedTime)
     {
+    	
+    	
     	if (creature.health() < 0) {
     		creature.setState(Creature.STATE_DYING);
     		creature.setVelocityX(0);
@@ -520,17 +579,17 @@ public class GameManager extends GameCore {
                 soundManager.play(boopSound);
                 badguy.setState(Creature.STATE_DYING);
                 
-                player.incScore(1);
+                player.addHealth(10);
                
                 player.setY(badguy.getY() - player.getHeight());
                 player.jump(true);
             }
             else {
                 // player dies! (unless godmode)
-            	if (player.getGOD() == false) { 
-                //player.setState(Creature.STATE_DYING);
-            	  player.getHit(1);
-                  System.out.println("Player Health: "+player.health());
+            	if (!player.getImmunity()) { 
+            	  player.getHit(5);
+            	  player.setImmunity(true);
+            	  hitTime = System.currentTimeMillis();
                   
             	}
             }
@@ -561,9 +620,11 @@ public class GameManager extends GameCore {
     public void acquirePowerUp(PowerUp powerUp) {
         // remove it from the map
         map.removeSprite(powerUp);
-
+        Creature player = (Creature)map.getPlayer();
+        
         if (powerUp instanceof PowerUp.Star) {
             // do something here, like give the player points
+        	player.addHealth(1);
             soundManager.play(prizeSound);
         }
         else if (powerUp instanceof PowerUp.Music) {

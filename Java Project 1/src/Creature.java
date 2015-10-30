@@ -34,9 +34,14 @@ public abstract class Creature extends Sprite {
     private boolean isLeft; //Triggered when creature is facing left
     private boolean isRight; //Triggered when creature is facing right
     private boolean isJumping = false;
+    private boolean immune;
+    private boolean isIdle;
+    
+    
+
     private int state;
-    private int health = 60; //Health that can be removed, creature dies when this hits 0
-    private int maxHealthPlayer = 30;
+    private int health = 20; //Health that can be removed, creature dies when this hits 0
+    private int maxHealthPlayer = 40;
     private int maxHealthEnemy = 10;
     private long stateTime;
 
@@ -56,6 +61,22 @@ public abstract class Creature extends Sprite {
         this.jumpLeft = jumpLeft;
         this.jumpRight = jumpRight;
         state = STATE_NORMAL;
+    }
+    
+    public boolean getIdle() {
+    	return isIdle;
+    }
+    
+    public void setIdle(boolean idle) {
+    	this.isIdle = idle;
+    }
+    
+    public boolean getImmunity() {
+    	return immune;
+    }
+    
+    public void setImmunity(boolean val){
+    	immune = val;
     }
     
     public int maxHealthPlayer() {
