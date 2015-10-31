@@ -135,6 +135,11 @@ public abstract class Creature extends Sprite {
     	isRight = true;
     }
     
+    public void setLeft(boolean direction) {
+    	isLeft = direction;
+    	isRight = !direction;
+    }
+    
     public boolean facingLeft() {
     	if (isLeft == true) {
     		return true;

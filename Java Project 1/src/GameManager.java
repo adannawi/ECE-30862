@@ -58,6 +58,10 @@ public class GameManager extends GameCore {
     private GameAction exit;
     private GameAction shoot;
     private GameAction crouch;
+    
+    private boolean readyToRespond = false;
+    private int responseTime = 0;
+    private int shootTime = 0;
 
     
 
@@ -170,7 +174,7 @@ public class GameManager extends GameCore {
                 player.jump(false);
             }
             if (shoot.isPressed()) {
-            	if (timer % 500 != 0) {
+            	if (timer % 1000 != 0) {
                    //do nothing if modulo isnt 0 		
             	}else if(!isCooling){
             		if (bulletCounter == 10) { //check if 10 bullets have been fired
@@ -359,6 +363,10 @@ public class GameManager extends GameCore {
 
         Creature player = (Creature)map.getPlayer();
         Graphics2D g = screen.getGraphics();
+        
+        if (this.responseTime % 2000 == 0) {
+        	readyToRespond = true;
+        }
         // player is dead! start map over
         if (player.getState() == Creature.STATE_DEAD) {
             map = resourceManager.reloadMap();
@@ -372,7 +380,7 @@ public class GameManager extends GameCore {
         }
         
         //Check if 1 second passed for immunity
-        if (((System.currentTimeMillis() - hitTime) % 1000) == 0) {
+        if (((System.currentTimeMillis() - hitTime) % 300) == 0) {
         	player.setImmunity(false);
         }
         
@@ -416,7 +424,7 @@ public class GameManager extends GameCore {
                 	player.addHealth(5);             	
                     i.remove();
                 }
-                else { //Make the monsters chase the player
+                else if (creature.getState() != Creature.STATE_DYING) { //Make the monsters chase the player
                 	if (Math.abs(player.getX() - creature.getX()) < 500) { //is within 500 units
                 		if (creature instanceof Fly) {
                 			if (player.getY() < creature.getY()) { 
@@ -441,20 +449,13 @@ public class GameManager extends GameCore {
                 		}
                 	}
                 	
-                	if (Math.abs(player.getX() - creature.getX()) < (64*4)){ // once within 100 meters do this
-                		if (player.getX() < creature.getX()) {
-                	//       ResourceManager.shootPlayer(map, creature); //crashes
-                			if ((creature instanceof Grub) && (creature.facingLeft())){
-            					this.aggressor = creature;
-            			    }
-
-                		}
-                		if (player.getX() > creature.getX()) {
-                 	//	   ResourceManager.spawnSomething(map); //crashes
-                			if ((creature instanceof Grub) && (!creature.facingLeft())){
-            					this.aggressor = creature;
-            			    }
-                		}
+                	if (Math.abs(player.getX() - creature.getX()) < (64*4)){ // once within 10 tiles do this
+                		this.aggressor = creature;
+                		 if (!readyToRespond) {
+                			 this.aggressor.setVelocityX(0);
+                			 this.aggressor.setLeft(!player.facingLeft());
+                			 this.responseTime += 1000;
+                		 }
                 	} else {this.aggressor = null;}
                 	}
                     updateCreature(creature, elapsedTime);
@@ -472,8 +473,13 @@ public class GameManager extends GameCore {
             // normal update
             sprite.update(elapsedTime);
         }
-        if (this.aggressor != null) {
-        ResourceManager.shootPlayer(map, this.aggressor);
+        if ((this.aggressor != null) && readyToRespond && (this.aggressor.getState() != this.aggressor.STATE_DYING)) {
+        	if (shootTime % 2000 != 0) {
+        		
+        	}else{
+            ResourceManager.shootPlayer(map, this.aggressor);
+        	}
+        	shootTime+= 100;
         }
     }
     
@@ -506,9 +512,6 @@ public class GameManager extends GameCore {
         long elapsedTime)
     {
     	
-    	if (this.aggressor == creature) {
-       		
-       	}
     	
     	if (creature.health() < 0) {
     		creature.setState(Creature.STATE_DYING);
@@ -624,12 +627,19 @@ public class GameManager extends GameCore {
             else {
                 // player dies! (unless godmode)
             	if (!player.getImmunity()) { 
-            	  player.getHit(5);
+            	  player.getHit(100);
             	  player.setImmunity(true);
             	  hitTime = System.currentTimeMillis();
                   
             	}
             }
+        }
+        else if (collisionSprite instanceof Projectile) {
+        	if (!player.getImmunity()) {
+        		player.getHit(5);
+        		player.setImmunity(true);
+        		hitTime = System.currentTimeMillis();
+        	}
         }
     }
     
@@ -640,7 +650,8 @@ public class GameManager extends GameCore {
      */
     public void checkBulletCollision(Projectile projectile, boolean canKill) {
     	Sprite collisionSprite = getSpriteCollision(projectile);
-    	if (collisionSprite instanceof Creature) {
+    	boolean isGoodOrBad = projectile.bulletNeutrality();
+    	if (collisionSprite instanceof Creature && isGoodOrBad) {
     		Creature badguy = (Creature)collisionSprite;
     		if (canKill) {
     			badguy.getHit(30);

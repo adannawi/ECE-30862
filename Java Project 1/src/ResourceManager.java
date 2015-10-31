@@ -200,6 +200,7 @@ public class ResourceManager {
     	bullet.setX(player.getX());
     	bullet.setY(player.getY() + (player.getHeight()*0.4f));
     	bullet.setSpawnX(player.getX());
+    	bullet.setNeutrality(true);
     	
     	//check which direction the player is facing
     	int dir = 0;
@@ -220,12 +221,12 @@ public class ResourceManager {
     public static void shootPlayer(TileMap map, Creature creature) {
        	Sprite bullet2 = (Sprite)bulletSprite.clone();
     	
-    	//set bullet on position of player
+    	//set bullet on position of creature
     	bullet2.setX(creature.getX());
     	bullet2.setY(creature.getY());
     	bullet2.setSpawnX(creature.getX());
-    	
-    	//check which direction the player is facing
+    	bullet2.setNeutrality(false);
+    	//check which direction the creature is facing
     	int dir = 0;
     	if (creature.facingLeft() == true) { 
     		dir = -1;
@@ -461,7 +462,7 @@ public class ResourceManager {
         flySprite = new Fly(flyAnim[0], flyAnim[1],
             flyAnim[2], flyAnim[3], flyAnim[3], flyAnim[3], flyAnim[3], flyAnim[3]);
         grubSprite = new Grub(grubAnim[0], grubAnim[1],
-            grubAnim[2], grubAnim[3], grubAnim[3], grubAnim[3], grubAnim[3], grubAnim[3]);
+            grubAnim[2], grubAnim[3], grubAnim[0], grubAnim[1], grubAnim[3], grubAnim[3]);
         bulletSprite = new Projectile(bulletAnim[0], bulletAnim[1]);
     }
 

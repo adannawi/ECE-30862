@@ -12,6 +12,7 @@ public class Projectile extends Sprite {
     private Animation movingLeft;
     private Animation movingRight;
     
+
     private boolean isLeft;
     private boolean isRight;
     
@@ -28,6 +29,8 @@ public class Projectile extends Sprite {
         this.movingLeft = movingLeft;
         this.movingRight = movingRight;
     }
+    
+
     
     public void isLeft() {
     	isLeft = true;

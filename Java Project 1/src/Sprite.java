@@ -14,6 +14,10 @@ public class Sprite {
     // velocity (pixels per millisecond)
     private float dx;
     private float dy;
+    
+    private boolean goodBullet = false;
+    private boolean badBullet = false;
+
 
     /**
         Creates a new Sprite object with the specified Animation.
@@ -37,6 +41,27 @@ public class Sprite {
     */
     public float getX() {
         return x;
+    }
+    
+    //Bullet shite
+    
+    public boolean bulletNeutrality() {
+    	if (goodBullet){
+    		return true;
+    	}
+    	if (badBullet){
+    		return false;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    public void setNeutrality(boolean state) {
+    	if (state) {
+    		goodBullet = true;
+    	}else{
+    		badBullet = true;
+    	}
     }
 
     /**
