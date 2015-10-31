@@ -46,6 +46,10 @@ public class Player extends Creature {
         }
         setVelocityY(0);
     }
+    
+    public boolean isOnGround() {
+    	return onGround;
+    }
 
 
     public void setY(float y) {

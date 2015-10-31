@@ -125,6 +125,7 @@ public class SoundManager extends ThreadPool {
         error occurs.
     */
     public Sound getSound(String filename) {
+    	System.out.println("Getting sound file: "+filename+"...");
         return getSound(getAudioInputStream(filename));
     }
 
@@ -172,6 +173,7 @@ public class SoundManager extends ThreadPool {
     */
     public AudioInputStream getAudioInputStream(String filename) {
         try {
+        	System.out.println("Entered getAudioInputStream to fetch "+filename+"...");
             return getAudioInputStream(
                 new FileInputStream(filename));
         }
@@ -187,7 +189,7 @@ public class SoundManager extends ThreadPool {
         stream
     */
     public AudioInputStream getAudioInputStream(InputStream is) {
-
+    		System.out.println("Entered the "+is+" stream..");
         try {
             if (!is.markSupported()) {
                 is = new BufferedInputStream(is);
@@ -218,6 +220,7 @@ public class SoundManager extends ThreadPool {
         Plays a sound. This method returns immediately.
     */
     public InputStream play(Sound sound) {
+    	System.out.println("Playing sound: "+sound+"...");
         return play(sound, null, false);
     }
 
@@ -274,6 +277,7 @@ public class SoundManager extends ThreadPool {
         Thread's line and buffer.
     */
     protected void threadStarted() {
+    	System.out.println("Started pooledthread...");
         // wait for the SoundManager constructor to finish
         synchronized (this) {
             try {
@@ -337,15 +341,18 @@ public class SoundManager extends ThreadPool {
         private InputStream source;
 
         public SoundPlayer(InputStream source) {
+        	System.out.println("Entered SoundPlayer!");
             this.source = source;
         }
 
         public void run() {
+        	System.out.println("Entered soundplayer run()..");
             // get line and buffer from ThreadLocals
             SourceDataLine line = (SourceDataLine)localLine.get();
             byte[] buffer = (byte[])localBuffer.get();
             if (line == null || buffer == null) {
                 // the line is unavailable
+            	System.out.println("Yo check your shiz");
                 return;
             }
 
@@ -368,6 +375,7 @@ public class SoundManager extends ThreadPool {
                     numBytesRead =
                         source.read(buffer, 0, buffer.length);
                     if (numBytesRead != -1) {
+                    	System.out.println("Sound should be playing..");
                         line.write(buffer, 0, numBytesRead);
                     }
                 }

@@ -7,11 +7,18 @@ import javax.swing.*;
 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.sampled.AudioFormat;
+
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 
 
@@ -43,6 +50,7 @@ public class GameManager extends GameCore {
     private InputManager inputManager;
     private TileMapRenderer renderer;
     private Spawner spawn;
+    private Creature aggressor;
 
     private GameAction moveLeft;
     private GameAction moveRight;
@@ -50,6 +58,7 @@ public class GameManager extends GameCore {
     private GameAction exit;
     private GameAction shoot;
     private GameAction crouch;
+
     
 
     public void init() {
@@ -75,8 +84,6 @@ public class GameManager extends GameCore {
         prizeSound = soundManager.getSound("sounds/prize.wav");
         boopSound = soundManager.getSound("sounds/boop2.wav");
         shootSound = soundManager.getSound("sounds/shoot1.wav");
-       
-
         // start music
         midiPlayer = new MidiPlayer();
         Sequence sequence =  midiPlayer.getSequence("sounds/music.midi");
@@ -171,7 +178,8 @@ public class GameManager extends GameCore {
             			coolDownTime = System.currentTimeMillis();
             		}
             			soundManager.play(shootSound);
-            			ResourceManager.spawnSomething(getMap());       
+            			ResourceManager.spawnSomething(getMap());   
+
             			prevState = true;
             			bulletCounter++;
             	}
@@ -213,6 +221,19 @@ public class GameManager extends GameCore {
         g.setColor(Color.RED);
         g.drawString("(X,Y): ("+player.getX()+","+player.getY()+")", screen.getWidth()/10, screen.getHeight()/3);
         
+        g.setColor(Color.YELLOW);
+        g.drawString("Is player on ground: "+((Player) player).isOnGround(), screen.getWidth()/10, screen.getHeight()/3.5f);
+        
+        if (aggressor != null) {
+        g.setColor(Color.PINK);
+        g.drawString("Aggressor stats: (X,Y): ("+this.aggressor.getX()+","+this.aggressor.getY()+")", screen.getWidth()/10, screen.getHeight()/2.5f);
+        }else{
+        	 g.drawString("Awaiting aggressor...", screen.getWidth()/10, screen.getHeight()/2.5f);
+        }
+        
+        if (aggressor != null) {
+        g.drawString("Spotted!", screen.getWidth()/10, screen.getHeight()/2);
+        }
         
     }
 
@@ -335,6 +356,7 @@ public class GameManager extends GameCore {
         in the current map.
     */
     public void update(long elapsedTime) {
+
         Creature player = (Creature)map.getPlayer();
         Graphics2D g = screen.getGraphics();
         // player is dead! start map over
@@ -371,7 +393,6 @@ public class GameManager extends GameCore {
         			}
         }
         
-        System.out.println((System.currentTimeMillis() - idleTime) % 1000);
        
 
         // get keyboard/mouse input
@@ -389,6 +410,9 @@ public class GameManager extends GameCore {
                 Creature creature = (Creature)sprite;
                 
                 if (creature.getState() == Creature.STATE_DEAD) {
+                	if (creature == this.aggressor) {
+                		this.aggressor = null;      	
+                	}
                 	player.addHealth(5);             	
                     i.remove();
                 }
@@ -417,14 +441,21 @@ public class GameManager extends GameCore {
                 		}
                 	}
                 	
-                	if (Math.abs(player.getX() - creature.getX()) < 100){ // once within 100 meters do this
+                	if (Math.abs(player.getX() - creature.getX()) < (64*4)){ // once within 100 meters do this
                 		if (player.getX() < creature.getX()) {
                 	//       ResourceManager.shootPlayer(map, creature); //crashes
+                			if ((creature instanceof Grub) && (creature.facingLeft())){
+            					this.aggressor = creature;
+            			    }
+
                 		}
                 		if (player.getX() > creature.getX()) {
                  	//	   ResourceManager.spawnSomething(map); //crashes
+                			if ((creature instanceof Grub) && (!creature.facingLeft())){
+            					this.aggressor = creature;
+            			    }
                 		}
-                	}
+                	} else {this.aggressor = null;}
                 	}
                     updateCreature(creature, elapsedTime);
                 }
@@ -440,6 +471,9 @@ public class GameManager extends GameCore {
             }
             // normal update
             sprite.update(elapsedTime);
+        }
+        if (this.aggressor != null) {
+        ResourceManager.shootPlayer(map, this.aggressor);
         }
     }
     
@@ -472,6 +506,9 @@ public class GameManager extends GameCore {
         long elapsedTime)
     {
     	
+    	if (this.aggressor == creature) {
+       		
+       	}
     	
     	if (creature.health() < 0) {
     		creature.setState(Creature.STATE_DYING);
