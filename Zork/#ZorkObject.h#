@@ -1,0 +1,25 @@
+#ifndef ZORKOBJECT_H
+#define ZORKOBJECT_H
+#include <list>
+#include <string>
+
+class ZorkObject {
+    std::string name;
+    std::string status;
+    std::string description;
+    std::list<Trigger> triggers;
+    std::list<String> items;
+    std::string type;
+
+ public:
+
+    ZorkObject();
+    void setName(std::string s_name);
+    std::string getName();
+    void setStatus(std::string s_status);
+    std::string getStatus();
+    void setDescription(std::string s_description);
+    std::string getDescription();
+    std::string getType();
+};
+#endif
