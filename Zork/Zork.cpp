@@ -2,6 +2,9 @@
 
 #include "Zork.h"
 #include "Item.h"
+#include "Container.h"
+#include "Room.h"
+#include "Creature.h"
 
 Zork::Zork(string filename){
     try{
@@ -69,14 +72,33 @@ bool Zork::createGame(string filename){
     Item * newItem;
     for (list<xml_node<>*>::iterator it = items_list.begin(); it != items_list.end(); it++){
 	newItem = new Item(*it);
-	items[newItem->name] = newItem;	
+	newItem->type = "item";
+	items[newItem->name] = newItem;
     }
 
-     cout << items["torch"]->turnOnMessage << endl;
-     cout << items["key"]->turnOnMessage << endl;
-     cout << items["explosive"]->turnOnMessage << endl;
+    //Create Container Objects
+    Container * newContainer;
+    for (list<xml_node<>*>::iterator it = containers_list.begin(); it != containers_list.end(); it++){
+	newContainer = new Container(*it);
+	newContainer->type = "container";
+	containers[newContainer->name] = newContainer;
+    }
 
+    //Create Room Objects
+    Room * newRoom;
+    for (list<xml_node<>*>::iterator it = rooms_list.begin(); it != rooms_list.end(); it++){
+	newRoom = new Room(*it);
+	newRoom -> type = "room";
+	rooms[newRoom->name] = newRoom;
+    }
 
+    //Create creature objects
+    Creature * newCreat;
+    for (list<xml_node<>*>::iterator it = creatures_list.begin(); it != creatures_list.end(); it++){
+	newCreat = new Creature(*it);
+	newCreat -> type = "creature";
+	creatures[newCreat->name] = newCreat;
+    }
 
     return true;
 

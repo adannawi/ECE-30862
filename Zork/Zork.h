@@ -14,6 +14,8 @@
 #include "rapidxml_print.hpp"
 #include "rapidxml_utils.hpp"
 #include "Item.h"
+#include "Container.h"
+#include "Room.h"
 
 using namespace rapidxml;
 using namespace std;
@@ -29,5 +31,7 @@ class Zork {
     string currRoom;
     map<string, string>inventory;
     map<string, Item*>items;
+    map<string, Container*>containers;
+    map<string, Room*>rooms;
 };
 #endif
