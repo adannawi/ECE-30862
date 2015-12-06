@@ -6,10 +6,12 @@ int main(int argc, char * argv[]){
 	cout << "Please input an XML file!" << endl;
 	return 0;
     }
-
     string filename = string(argv[1]);
     Zork * game = new Zork(filename);
-    delete game;
 
+    if (game->completeFlag){
+	game->begin();
+    }
+    delete game;
     return 0;
 }

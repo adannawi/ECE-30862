@@ -22,7 +22,7 @@ void Container::createContainer(xml_node<> * node){
 	    openState = true;
 	}
 	if (string(node->name()) == string("trigger")){
-	    //Do something triggery
+	    this->triggers.push_front(new Trigger(node));
 	}
 
 	node = node->next_sibling();

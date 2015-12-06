@@ -6,6 +6,9 @@
 #include <list>
 #include "rapidxml.hpp"
 #include "ZorkObject.h"
+#include "Condition.h"
+using namespace rapidxml;
+using namespace std;
 
 class Creature: public ZorkObject{
  private:

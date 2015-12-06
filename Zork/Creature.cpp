@@ -1,4 +1,6 @@
 #include "Creature.h"
+#include "Zork.h"
+#include <list>
 
 Creature::Creature(xml_node<> * node){
     createCreature(node);
@@ -17,7 +19,7 @@ void Creature::createCreature(xml_node <> * node){
 	    this->vulnerabilities[node->value()] = node->value();
 	}
 	if (string(node->name()) == string("trigger")){
-	    //handle trigger
+	    this->triggers.push_front(new Trigger(node));
 	}
 	if (string(node->name()) == string("attack")){
 	    getAttacked(node);
@@ -33,13 +35,13 @@ void Creature::getAttacked(xml_node<> * node){
 	    addCondition(node);
 	}
 	if (string(node->name()) == string("print")){
-	    this->print.push_front(node->value());
+	    this->print = node->value();
 	}
 	if (string(node->name()) == string("action")){
-	    this->action.push_front(node->value());
+	    this->action = node->value();
 	}
 	if (string(node->name()) == string("trigger")){
-	    //handle trigger
+	    this->triggers.push_front(new Trigger(node)); //handle trigger
 	}
 	node = node -> next_sibling();
     }
@@ -50,10 +52,10 @@ void Creature::addCondition(xml_node<> * node){
     
     while (node != NULL){
 	if (string(node->name()) == string("status")){
-	    //add condition object
+	    conditions.push_front(new StatusCondition(node));//add condition object
 	}
 	if (string(node->name()) == string("has")){
-	    //add condhas object
+	    conditions.push_front(new HasCondition(node));//add condhas object
 	}
 	node = node -> next_sibling();
     }

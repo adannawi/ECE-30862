@@ -17,7 +17,7 @@ void Room::createRoom(xml_node<> * node){
 	    this->items[node->value()] = node->value();
 	}
 	if (string(node->name()) == string("trigger")){
-	    //Do something with triggers
+	    this->triggers.push_front(new Trigger(node));
 	}
 	if (string(node->name()) == string("border")){
 	    setBorder(node);

@@ -2,6 +2,7 @@
 #define ZORKOBJECT_H
 #include <list>
 #include <string>
+#include "Trigger.h"
 using namespace std;
 
 class ZorkObject {
@@ -11,8 +12,7 @@ class ZorkObject {
     string status;
     string description;
     string type;
-
-
+    list<Trigger *> triggers;
     ZorkObject();
     void configure(list<string> configMap);
     void setName(string s_name);
