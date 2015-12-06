@@ -21,7 +21,7 @@ class Creature: public ZorkObject{
     map<string, string>vulnerabilities;
     list<Condition *>conditions;
     string print;
-    string action;
+    list<string> action;
     bool attack(Zork&, string);
 };
 

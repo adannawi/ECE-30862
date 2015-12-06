@@ -30,7 +30,7 @@ void Trigger::createTrigger(xml_node<>* node){
 	}else if (string(node->name()) == string("print")){
 	    this->print = node->value();
 	}else if (string(node->name()) == string("action")){
-	    this->action = node->value();
+	    this->action.push_front(node->value());
 	}
 	node = node -> next_sibling();
     }
@@ -38,6 +38,7 @@ void Trigger::createTrigger(xml_node<>* node){
 
 void Trigger::addCondition(xml_node<>* node){
      node = node -> first_node();
+     // cout << "Node name in trigger addCondition: " << node->name() << endl;
     while (node != NULL){
 	if (string(node->name()) == string("status")){
 	    conditions.push_front(new StatusCondition(node));
@@ -48,5 +49,6 @@ void Trigger::addCondition(xml_node<>* node){
 	    return;
 	}
 	node = node -> next_sibling();
+	//	cout << "next sibling: " << node->name() << endl;
     }
 }

@@ -132,28 +132,25 @@ void Zork::begin(){
 	checkCommand(userIn);
 	userIn = "";
 	//	cout << "Got to end of begin()" << endl;
-	//	checkTriggers();
+	checkTriggers();
     }
 }
 
     bool Zork::checkTriggers(){
 	bool state = false;
 	Room * roomPtr = rooms.find(currRoom)->second;
-	cout << "CURRENT ROOM: " << roomPtr->name << endl;
+	//	cout << "CURRENT ROOM: " << roomPtr->name << endl;
 	Container * tempCont;
 	Item * tempItem;
 	Creature * tempCreat;
 	Trigger * tempTrig;
-	//	cout << "Triggers in " << roomPtr->name << " amount to " << roomPtr->triggers.size() << endl;
 	//Check triggers in room
 	for (list<Trigger*>::iterator trig_it = roomPtr->triggers.begin(); trig_it != roomPtr->triggers.end();){
-	    tempTrig = *trig_it;;
-	    //   cout << "Checking room triggers... " << endl;
+	    tempTrig = *trig_it;
 	    if (tempTrig->evaluate(*this)){
-		//	cout << "Checked trigger!" << endl;
-			cout << tempTrig->print << endl;
-		if (tempTrig->action != ""){
-		    completeAction(tempTrig->action);
+		cout << tempTrig->print << endl;
+		for (list<string>::iterator act = tempTrig->action.begin(); act != tempTrig->action.end(); ++act){
+		    completeAction(*act);
 		}
 		if (tempTrig->hasCommand){
 		    state = true;
@@ -188,7 +185,9 @@ void Zork::begin(){
 		    tempTrig = *trig_it;
 		    if (tempTrig->evaluate(*this)){
 			cout << tempTrig->print << endl;
-			completeAction(tempTrig->action);
+			for (list<string>::iterator act = tempTrig->action.begin(); act != tempTrig->action.end(); ++act){
+			    completeAction(*act);
+			}
 			if (tempTrig->hasCommand){
 			    state = true;
 			}
@@ -209,8 +208,10 @@ void Zork::begin(){
 	    for (list<Trigger*>::iterator trig_it = tempCont->triggers.begin(); trig_it != tempCont->triggers.end(); ){
 		tempTrig = *trig_it;
 		if(tempTrig->evaluate(*this)){
-		    cout << tempTrig->print;
-		    completeAction(tempTrig->action);
+		    cout << tempTrig->print << endl;
+		    for (list<string>::iterator act = tempTrig->action.begin(); act != tempTrig->action.end(); ++act){
+			completeAction(*act);
+		    }
 		    if (tempTrig->hasCommand){
 			state = true;
 		    }
@@ -229,13 +230,15 @@ void Zork::begin(){
 	//Check creatures
 	for (map<string, string>::iterator creatures_it = roomPtr->creatures.begin(); creatures_it != roomPtr->creatures.end(); ++creatures_it){
 	    tempCreat = creatures.find(creatures_it->second)->second;
-	    cout << "Creature being checked for triggers: " << tempCreat->name << endl;
+	    // cout << "Creature being checked for triggers: " << tempCreat->name << endl;
 	    //  cout << "4.5" << endl;
 	    for (list<Trigger*>::iterator trig_it = tempCreat->triggers.begin(); trig_it != tempCreat->triggers.end();){
 		tempTrig = *trig_it;
 		if(tempTrig->evaluate(*this)){
 		    cout << tempTrig->print << endl;
-		    completeAction(tempTrig->action);
+		    for (list<string>::iterator act = tempTrig->action.begin(); act != tempTrig->action.end(); ++act){
+			completeAction(*act);
+		    }
 		    if (tempTrig->hasCommand){
 			state = true;
 		    }
@@ -250,7 +253,7 @@ void Zork::begin(){
 		}
 	    }
 	}
-	//	cout << "5" << endl;
+	//		cout << "5" << endl;
 	//Inventory check
 	for (map<string,string>::iterator inv_it = inventory.begin(); inv_it != inventory.end(); ++inv_it){
 	    tempItem = items.find(inv_it->second)->second;
@@ -258,7 +261,9 @@ void Zork::begin(){
 		tempTrig = *trig_it;
 		if (tempTrig -> evaluate(*this)){
 		    cout << tempTrig -> print << endl;
-		    completeAction(tempTrig->action);
+		    for (list<string>::iterator act = tempTrig->action.begin(); act != tempTrig->action.end(); ++act){
+			completeAction(*act);
+		    }
 		    if(tempTrig->hasCommand){
 			state = true;
 		    }
@@ -282,7 +287,9 @@ void Zork::begin(){
 		tempTrig = *trig_it;
 		if (tempTrig->evaluate(*this)){
 		    cout << tempTrig->print << endl;
-		    completeAction(tempTrig->action);
+		    for (list<string>::iterator act = tempTrig->action.begin(); act != tempTrig->action.end(); ++act){
+			completeAction(*act);
+		    }
 		    if (tempTrig->hasCommand){
 			state = true;
 		    }
@@ -436,10 +443,12 @@ void Zork::checkCommand(string input){
 	    if (inventory.find(command[3]) != inventory.end()){
 		if (wrongNeighbourhood->attack(*this, command[3])){
 		    cout << "You assault the " << command[1] << " with the " << command[3] << "." << endl;
-		    wrongNeighbourhood->print;
-		    completeAction(wrongNeighbourhood->action);
+		    cout << wrongNeighbourhood->print << endl;
+		    for (list<string>::iterator act = wrongNeighbourhood->action.begin(); act != wrongNeighbourhood->action.end(); ++act){		    
+			completeAction(*act);
+		    }
 		}else{
-		    cout << "Error! 1" << endl;
+		    cout << "Error!" << endl;
 		}
 	    }else{
 		cout << "Error!" << endl;
@@ -515,7 +524,7 @@ void Zork::completeAction(string action){
 	string resultLocation = splitAction[3];
 	string object = splitAction[1];
 	string objType = types.find(object)->second;
-	string resultLocationType = types.find(resultLocationType)->second;
+	string resultLocationType = types.find(resultLocation)->second;
 
 	if (resultLocationType == "container"){
 	    Container * resultContainer = containers.find(resultLocation)->second;

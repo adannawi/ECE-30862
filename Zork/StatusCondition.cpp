@@ -19,14 +19,15 @@ StatusCondition::StatusCondition(xml_node<>* node){
 }
 
 void StatusCondition::createCondition(xml_node<>* node){
-    // node = node->first_node();
     while (node != NULL){
-	cout << node->name() << endl;
+	//	cout << node->name() << endl;
 	if (string(node->name()) == string("object")){
+	    //  cout << "Created object condition: "<< node->value()  << endl;
 	    this->object = node->value();
 	}else if (string(node->name()) == string("status")){
+	    //  cout << "Created status condition: " << node->value()  << endl;
 	    this->status = node->value();
 	}
-	node = node -> next_sibling();
+	node = node -> previous_sibling(); // was next sibling
     }
 }

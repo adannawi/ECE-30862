@@ -23,7 +23,7 @@ class Trigger{
     string type;
     bool hasCommand;
     string print;
-    string action;
+    list<string> action;
     bool evaluate(Zork&);
 };
 

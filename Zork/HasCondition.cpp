@@ -8,12 +8,15 @@ HasCondition::HasCondition(xml_node<>* node){
 void HasCondition::createCondition(xml_node<>* node){
     while (node != NULL){
 	if (string(node->name()) == string("has")){
+	    //   cout << "Created has condition: " << node->value() << endl;
 	    this->has = node->value();
 	}
 	if (string(node->name()) == string("object")){
+	    // cout << "Created has object: " << node->value() << endl;
 	    this->object = node->value();
 	}
 	if (string(node->name()) == string("owner")){
+	    //  cout << "Created has owner: " << node->value() << endl;
 	    this->owner = node->value();
 	}
 	node = node -> next_sibling();

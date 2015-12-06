@@ -38,7 +38,7 @@ void Creature::getAttacked(xml_node<> * node){
 	    this->print = node->value();
 	}
 	if (string(node->name()) == string("action")){
-	    this->action = node->value();
+	    this->action.push_front(node->value());
 	}
 	if (string(node->name()) == string("trigger")){
 	    this->triggers.push_front(new Trigger(node)); //handle trigger
@@ -63,13 +63,10 @@ void Creature::addCondition(xml_node<> * node){
 
 bool Creature::attack(Zork&zork, string weapon){
     if (vulnerabilities.find(weapon) == vulnerabilities.end()){
-	cout << "No vulnerabilities!!" << endl;
 	return false;
     }
     for (list<Condition*>::iterator it = conditions.begin(); it != conditions.end(); ++it){
-	cout << "Checking conditions.. " << endl;
 	if (!((*it)->evaluate(zork))){
-	    cout << "Conditions not met!" << endl;
 	    return false;
 	}
     }
