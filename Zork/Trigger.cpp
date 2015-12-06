@@ -22,18 +22,14 @@ void Trigger::createTrigger(xml_node<>* node){
     while (node != NULL){
 	if (string(node->name()) == string("type")){
 	    this->type = node->value();
-	}
-	if (string(node->name()) == string("command")){
+	}else if (string(node->name()) == string("command")){
 	    this->conditions.push_front(new Command(node));
 	    hasCommand = true;
-	}
-	if (string(node->name()) == string("condition")){
+	}else if (string(node->name()) == string("condition")){
 	    addCondition(node);
-	}
-	if (string(node->name()) == string("print")){
+	}else if (string(node->name()) == string("print")){
 	    this->print = node->value();
-	}
-	if (string(node->name()) == string("action")){
+	}else if (string(node->name()) == string("action")){
 	    this->action = node->value();
 	}
 	node = node -> next_sibling();
@@ -41,7 +37,7 @@ void Trigger::createTrigger(xml_node<>* node){
 }
 
 void Trigger::addCondition(xml_node<>* node){
-    node = node -> first_node();
+     node = node -> first_node();
     while (node != NULL){
 	if (string(node->name()) == string("status")){
 	    conditions.push_front(new StatusCondition(node));

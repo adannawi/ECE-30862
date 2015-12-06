@@ -6,10 +6,9 @@ HasCondition::HasCondition(xml_node<>* node){
 }
 
 void HasCondition::createCondition(xml_node<>* node){
-    node = node -> first_node();
     while (node != NULL){
 	if (string(node->name()) == string("has")){
-		this->has = node->value();
+	    this->has = node->value();
 	}
 	if (string(node->name()) == string("object")){
 	    this->object = node->value();
@@ -24,14 +23,18 @@ void HasCondition::createCondition(xml_node<>* node){
 bool HasCondition::evaluate(Zork& zork){
     if (owner == "inventory"){
 	if (zork.inventory.find(object) != zork.inventory.end()){
-	    if(has == "yes" || has == "no"){
+	    if (has == "yes"){
+		return true;
+	    }
+	}else{
+	    if (has == "no"){
 		return true;
 	    }
 	}
 	return false;
     }
 
-    if (zork.rooms.find(owner) != zork.rooms.end()){
+    else if (zork.rooms.find(owner) != zork.rooms.end()){
 	Room * roomPtr = zork.rooms.find(owner)->second;
         bool isItemThere = (roomPtr->items.find(object) != roomPtr->items.end());
 	bool isItemOkay = (has == "yes");
@@ -42,7 +45,7 @@ bool HasCondition::evaluate(Zork& zork){
 	}
     }
 
-    if (zork.containers.find(owner) != zork.containers.end()){
+    else if (zork.containers.find(owner) != zork.containers.end()){
 	Container * contPtr = zork.containers.find(owner)->second;
 	bool isItemThere = (contPtr->items.find(object) != contPtr->items.end());
 	bool isItemOkay = (has == "yes");
@@ -52,5 +55,7 @@ bool HasCondition::evaluate(Zork& zork){
 	    return false;
 	}
     }
+
+    return false;
 }
 	    

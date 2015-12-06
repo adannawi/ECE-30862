@@ -1,5 +1,5 @@
 #include "Creature.h"
-#include "Zork.h"
+//#include "Zork.h"
 #include <list>
 
 Creature::Creature(xml_node<> * node){
@@ -59,4 +59,19 @@ void Creature::addCondition(xml_node<> * node){
 	}
 	node = node -> next_sibling();
     }
+}
+
+bool Creature::attack(Zork&zork, string weapon){
+    if (vulnerabilities.find(weapon) == vulnerabilities.end()){
+	cout << "No vulnerabilities!!" << endl;
+	return false;
+    }
+    for (list<Condition*>::iterator it = conditions.begin(); it != conditions.end(); ++it){
+	cout << "Checking conditions.. " << endl;
+	if (!((*it)->evaluate(zork))){
+	    cout << "Conditions not met!" << endl;
+	    return false;
+	}
+    }
+    return true;
 }

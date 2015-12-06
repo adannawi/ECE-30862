@@ -2,8 +2,12 @@
 #include "Zork.h"
 
 bool StatusCondition::evaluate(Zork& zork){
+    // cout << "Checking status condition. " << endl;
     ZorkObject * tempObj = zork.objects.find(object)->second;
-    string tempStatus = tempObj->status;
+    string tempStatus = "";
+    if (tempObj != NULL){
+     tempStatus = tempObj->status;
+    }
     if ((tempObj != NULL) && (tempStatus == status)){
 	return true;
     }
@@ -15,12 +19,12 @@ StatusCondition::StatusCondition(xml_node<>* node){
 }
 
 void StatusCondition::createCondition(xml_node<>* node){
-    node = node->first_node();
+    // node = node->first_node();
     while (node != NULL){
+	cout << node->name() << endl;
 	if (string(node->name()) == string("object")){
 	    this->object = node->value();
-	}
-	if (string(node->name()) == string("status")){
+	}else if (string(node->name()) == string("status")){
 	    this->status = node->value();
 	}
 	node = node -> next_sibling();
